@@ -1,0 +1,6 @@
+@use '../utils' as u;
+@use 'sass:meta';
+
+body {
+  font-family: #{ meta.inspect( u.$body-font ) };
+}

@@ -1,0 +1,18 @@
+@use 'sass:math';
+@use 'sass:color';
+
+@function rem($size) {
+  @if math.is-unitless($size) {
+    @return math.div($size, 16) + rem;
+  } @else {
+    @error 'rem() expects unitless values';
+  }
+}
+
+@function set-text-color($color) {
+  @if (color.lightness($color) < 70) {
+    @return #000;
+  } @else {
+    @return #fff;
+  }
+}

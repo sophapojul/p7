@@ -1,0 +1,17 @@
+@use 'functions' as f;
+
+%flex-col-100p {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+%grid-275 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(f.rem(275), 1fr));
+  column-gap: 6.6vw;
+  row-gap: f.rem(20);
+  justify-content: center;
+  margin: f.rem(30) 0;
+}
