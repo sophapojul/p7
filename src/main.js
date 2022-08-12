@@ -1,4 +1,4 @@
-import '/css/style.scss';
+import '/src/assets/css/style.scss';
 import '/src/utils/toNormalize.js';
 import recipes from "./data/recipes.js";
 import Recipes from './constructor/recipes.js';
