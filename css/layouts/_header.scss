@@ -1,0 +1,10 @@
+@use '../utils/index' as u;
+
+.header {
+    @include u.flex-center(column);
+    color: u.$color-primary;
+
+    &__title {
+        font-size: 3rem;
+    }
+}

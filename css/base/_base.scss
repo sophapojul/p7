@@ -1,4 +1,4 @@
-@use '../utils' as u;
+@use '../utils/index' as u;
 
 
 *, *::before, *::after {
@@ -22,8 +22,8 @@ a {
   text-decoration: none;
 }
 
-li {
-  list-style-type: none;
+ul, li {
+  list-style: none;
 }
 
 img {
@@ -37,5 +37,5 @@ body {
   width: 100vw;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 clamp(.5rem, 7vw - 1rem, 7rem);
+  padding: 3rem clamp(.5rem, 7vw - 1rem, 7rem);
 }

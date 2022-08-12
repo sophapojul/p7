@@ -1,0 +1,187 @@
+@use '../utils/index' as u;
+
+.keyword {
+  position: relative;
+  //@include u.flex-center(row);
+  display: flex;
+  margin: 1rem 1rem 1rem 0;
+
+  &__item {
+  }
+
+  .dropdown {
+    border-radius: u.$border-radius-xs;
+    margin: 1rem 1rem 1rem 0;
+    //width: 100%;
+
+    &__btn {
+      //@include u.flex-center(row);
+      //position: relative;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-radius: u.$border-radius-xs;
+      color: u.$color-white;
+      width: u.rem(170);
+      height: u.rem(70);
+
+      &--blue, &[data-name='ingredients'] {
+        background-color: u.$bgc-blue;
+      }
+
+      &--green, &[data-name='appareils'] {
+        background-color: u.$bgc-green;
+      }
+
+      &--red, &[data-name='ustensiles'] {
+        background-color: u.$bgc-red;
+      }
+
+
+      &::after {
+        border-bottom: 2px solid u.$color-white;
+        border-right: 2px solid u.$color-white;
+        content: "";
+        height: 12px;
+        pointer-events: none;
+        transform: translate(0, -65%) rotate(45deg);
+        width: 12px;
+      }
+    }
+
+    &__content {
+      display: none;
+
+      &--active, &[data-active='true'] {
+        display: block;
+        position: absolute;
+        top: 3.5rem;
+        max-width: 50%;
+        padding: 1rem;
+        border-radius: u.$border-radius-xs;
+        background-color: u.$bgc-blue;
+        color: u.$color-white;
+        cursor: pointer;
+        z-index: 10;
+
+        &::after {
+          border-bottom: 2px solid u.$color-white;
+          border-right: 2px solid u.$color-white;
+          content: "";
+          height: 12px;
+          pointer-events: none;
+          position: absolute;
+          right: 1rem;
+          top: 2rem;
+          transform: translate(0, -65%) rotate(225deg);
+          width: 12px;
+        }
+
+      }
+
+      &__input {
+        height: 2rem;
+        background-color: inherit;
+        color: u.$color-white;
+        border: none;
+
+      }
+
+      ::placeholder {
+        color: u.$color-white;
+        opacity: 0.5;
+      }
+
+      &__options {
+        display: flex;
+        flex-wrap: wrap;
+
+        & > li {
+          width: 33%;
+        }
+      }
+    }
+
+  }
+
+  //.dropdown {
+  //  position: relative;
+  //  cursor: pointer;
+  //}
+
+  //.dropdown .dropdown-toggle {
+  //  appearance: none;
+  //  background: u.$bgc-blue;
+  //  color: #fff;
+  //  border: 0;
+  //  padding: 12px 35px 12px 12px;
+  //  border-radius: u.$border-radius-xs;
+  //  text-align: left;
+  //  position: relative;
+  //  max-width: 300px;
+    //overflow: hidden;
+    //text-overflow: ellipsis;
+  //  white-space: nowrap;
+  //  cursor: pointer;
+  //  outline: none;
+  //}
+  //
+  //.dropdown .dropdown-toggle::after {
+  //  content: '';
+  //  border-width: 6px;
+  //  border-radius: 3px;
+  //  border-style: solid;
+  //  border-color: transparent;
+  //  border-top-color: inherit;
+  //  position: absolute;
+  //  right: 12px;
+  //  top: calc(50% + 3px);
+  //  transform: translateY(-50%);
+  //}
+  //
+  //.dropdown .dropdown-toggle.active::after {
+  //  border-color: transparent;
+  //  border-bottom-color: inherit;
+  //  top: calc(50% - 3px);
+  //}
+  //
+  //.dropdown .dropdown-menu {
+  //  position: absolute;
+  //  left: 50%;
+  //  top: 80%;
+  //  transform: translateX(-50%);
+  //  background: #fff;
+  //  box-shadow: 0 1px 4px rgba(150, 150, 150, 0.65);
+  //  list-style: none;
+  //  padding: 5px 0;
+  //  margin: 0;
+  //  max-width: 320px;
+  //  width: calc(100% + 24px);
+  //  border-radius: 3px;
+  //  z-index: 10;
+  //  visibility: hidden;
+  //  overflow: auto;
+  //  max-height: 200px;
+  //}
+  //
+  //.dropdown .dropdown-menu[aria-expanded="true"] {
+  //  visibility: visible;
+  //}
+  //
+  //.dropdown .dropdown-menu > li {
+  //  height: 35px;
+  //  display: block;
+  //  align-items: center;
+  //  padding: 10px 12px;
+  //  overflow: hidden;
+  //  text-overflow: ellipsis;
+  //  white-space: nowrap;
+  //}
+  //
+  //.dropdown .dropdown-menu > li:hover,
+  //.dropdown .dropdown-menu > li:focus {
+  //  outline: none;
+  //  background: #f2f2f2;
+  //}
+
+}

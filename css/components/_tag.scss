@@ -1,0 +1,18 @@
+@use '../utils' as u;
+
+.tag {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem 1rem 1rem 0;
+}
+.search__tag {
+  background-color: u.$bgc-blue ;
+  color: u.$color-white;
+  border-radius: u.$border-radius-xs;
+  margin-right: 1rem;
+
+  &>*{
+    padding: .5rem;
+  }
+
+}
