@@ -1781,7 +1781,7 @@ function searchKeywords(arr, substring, keyword) {
 }
 
 // console.log('test1',searchIngredientsByLoop(recipes, "coco"));
-console.log('test2', searchIngredients(recipes, "coc"));
+//console.log('test2', searchIngredients(recipes, "coc"));
 // console.log('test3', searchKeywords(recipes, "pat", "ingredients"));
 
 
