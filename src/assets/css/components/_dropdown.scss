@@ -51,18 +51,19 @@
 
     &__content {
       display: none;
+      position: absolute;
+      top: 3.5rem;
+      max-width: 50%;
+      padding: 1rem;
+      border-radius: u.$border-radius-xs;
+      background-color: u.$bgc-blue;
+      color: u.$color-white;
+      cursor: pointer;
+      z-index: 10;
+      pointer-events: none;
 
       &--active, &[data-active='true'] {
         display: block;
-        position: absolute;
-        top: 3.5rem;
-        max-width: 50%;
-        padding: 1rem;
-        border-radius: u.$border-radius-xs;
-        background-color: u.$bgc-blue;
-        color: u.$color-white;
-        cursor: pointer;
-        z-index: 10;
 
         &::after {
           border-bottom: 2px solid u.$color-white;
@@ -75,6 +76,7 @@
           top: 2rem;
           transform: translate(0, -65%) rotate(225deg);
           width: 12px;
+          pointer-events: auto;
         }
 
       }

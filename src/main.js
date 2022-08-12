@@ -60,7 +60,10 @@ keywordArray.forEach(keyword => {
     keywordElt.render();
     document.querySelectorAll('.dropdown__btn').forEach(btn => {
         btn.addEventListener('click', function () {
-            this.nextElementSibling.dataset.active = 'true';
+            this.nextElementSibling.dataset.active = this.nextElementSibling.dataset.active === 'false' ? 'true' : 'false';
+        });
+        btn.parentElement.querySelector('.dropdown__content').addEventListener('click', function (ev) {
+            this.dataset.active = 'false';
         });
         document.body.addEventListener('keyup', function (ev) {
             if (ev.key === 'Escape') {
@@ -73,7 +76,7 @@ keywordArray.forEach(keyword => {
                 this.dataset.selected = 'true';
                 tagSelect(this);
             });
-        })
+        });
         btn.parentElement.querySelector('.dropdown__content__input').addEventListener('input', function (ev) {
             filteredRecipesDisplay(recipes, ev.target.value);
             Array.from(ev.target.nextElementSibling.querySelectorAll('li[data-value]')).forEach(item => {
