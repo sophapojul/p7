@@ -18,9 +18,9 @@ export function KeywordElt(keyword, options) {
     `;
     this.btn = this.ul.querySelector(`div[data-name=${this.keyword.toNormalize()}]`);
     this.content = this.btn.nextElementSibling;
-    this.btn.addEventListener('click', function () {
-       this.content.dataset.active === 'false' ? this.openDropdown() : this.closeDropdown();
-    });
+    // this.btn.addEventListener('click', (ev) => {
+    //    this.content.dataset.active === 'false' ? this.openDropdown() : this.closeDropdown();
+    // });
     this.content.addEventListener('keyup', function (e) {
         if (e.keyCode === 13) {
             this.closeDropdown();
