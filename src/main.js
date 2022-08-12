@@ -6,8 +6,6 @@ import {KeywordElt} from './constructor/keywordElt.js';
 import Tag from './constructor/tag.js';
 import searchRecipes from "./filter/searchRecipes.js";
 import Ingredients from "./constructor/ingredients.js";
-// import searchRecipesByLoop from "./filter/searchRecipesByLoop.js";
-import searchRecipesByLoop from "./filter/simpleSearch.js";
 
 const ingredientsUniqueList = Array.from( new Set({ recipes }.recipes.map(recipe => recipe.ingredients.map(ingredient => ingredient.ingredient)).flat()));
 const applianceArray = { recipes }.recipes.map(recipe => recipe.appliance).flat()
@@ -88,13 +86,3 @@ keywordArray.forEach(keyword => {
         })
     })
 });
-
-//  'h' 'e' 'l' 'l' 'o'
-//  'l' 'o'
-
-// console.log('test',searchRecipesByLoop(recipes, "ane"));
-
-// console.log(simpleSearch("Découper le thon en dés, mettre dans un plat et recouvrir de jus de citron vert (mieux vaut prendre un plat large et peu profond). Laisser reposer au réfrigérateur au moins 2 heures. (Si possible faites-le le soir pour le lendemain. Après avoir laissé mariner le poisson, coupez le concombre en fines rondelles sans la peau et les tomates en prenant soin de retirer les pépins. Rayer la carotte. Ajouter les légumes au poissons avec le citron cette fois ci dans un Saladier. Ajouter le lait de coco. Pour ajouter un peu plus de saveur vous pouvez ajouter 1 à 2 cuillères à soupe de Crème de coco", 'coc'));
-// console.log(searchRecipesByLoop(recipes, "lait de coc"));
-
-// console.log('test', simpleSearch('Mélanger la farine avec le sucre et les oeufs en ajoutant du sucre vanillé. Ajouter le lait petit à petit. Ajouter un petit vers de rhum. Verser la masse dans un plat beurré y placer les pruneaux et faire cuire à 200° pendant 45 minutes', 'sucre'))
