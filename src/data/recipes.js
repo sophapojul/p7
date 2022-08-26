@@ -1,4 +1,4 @@
-import '/src/utils/toNormalize.js';
+import '../utils/toNormalize.js';
 
 const recipes = [
     {

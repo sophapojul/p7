@@ -1,6 +1,6 @@
-import '/src/assets/css/style.scss';
-import '/src/utils/toNormalize.js';
-import '/src/utils/toCapitalize.js';
+import './assets/css/style.scss';
+import './utils/toNormalize.js';
+import './utils/toCapitalize.js';
 import recipes from './data/recipes.js';
 import Recipes from './constructor/recipes.js';
 import Tag from './constructor/tag.js';
@@ -16,42 +16,6 @@ import searchRecipes from './filter/searchRecipes.js';
 function uniqueValues(array) {
     return Array.from(new Set(array));
 }
-
-/**
- * It takes an array of recipes, and returns an array of unique ingredients
- * @param {Array} array - an array of objects
- * @type {any[]}
- */
-const ingredients = uniqueValues(
-    { recipes }.recipes
-        .map((recipe) =>
-            recipe.ingredients.map((ingredient) => ingredient.ingredient)
-        )
-        .flat()
-        .map((ingredient) => ingredient.toCapitalize())
-);
-/**
- * It takes an array of recipes, and returns an array of unique appliances
- * @param {Array} array - an array of objects
- * @type {any[]}
- */
-const appliances = uniqueValues(
-    { recipes }.recipes
-        .map((recipe) => recipe.appliance)
-        .flat()
-        .map((appliance) => appliance.toCapitalize())
-);
-/**
- * It takes an array of recipes, and returns an array of unique utensils
- * @param {Array} array - an array of objects
- * @type {any[]}
- */
-const utensils = uniqueValues(
-    { recipes }.recipes
-        .map((recipe) => recipe.utensils)
-        .flat()
-        .map((obj) => obj.toCapitalize())
-);
 
 /**
  * It takes an array of recipes, and returns an array of unique ingredients
@@ -104,13 +68,13 @@ const tagList = document.querySelector('#tag-list');
 const keywords = ['ingredients', 'appareils', 'ustensiles'];
 
 const keywordArray = [
-    ['Ingrédients', ingredients],
-    ['Appareils', appliances],
-    ['Ustensiles', utensils],
+    ['Ingrédients', getIngredients(recipes)],
+    ['Appareils', getAppliances(recipes)],
+    ['Ustensiles', getUtensils(recipes)],
 ];
 
 const optionsListObj = {};
-const optionsListArray = [ingredients, appliances, utensils];
+const optionsListArray = [getIngredients(recipes), getAppliances(recipes), getUtensils(recipes)];
 const keywordObject = Object.assign(optionsListObj, optionsListArray);
 
 /**
@@ -232,17 +196,17 @@ function tagSelect(elt) {
     } else {
         new Tag(text);
     }
-    const tags = Array.from(
-        document.querySelectorAll('.search__tag__item')
-    ).map((tag) => tag.innerText);
+    const tags = listTags.map((tag) => tag.innerText);
     if (tags.length > 0) {
         const results = [];
         tags.map((tag) => {
             const result = searchRecipes(recipes, tag);
             results.push(result);
+            console.log('result: ', result);
             const resultRecipes = results.reduce((a, b) =>
                 a.filter((x) => b.includes(x))
             );
+            console.log('resultRecipes: ', resultRecipes);
         });
     }
     let tagList = document.querySelector('#tag-list');
