@@ -2,16 +2,16 @@ function searchRecipes(arr, substring) {
     return arr.filter(function (recipe) {
         return (
             recipe.name
-                .toLocaleUpperCase()
-                .includes(substring.toLocaleUpperCase()) ||
+                .toNormalize()
+                .includes(substring.toNormalize()) ||
             recipe.ingredients.find(function (ingredient) {
                 return ingredient.ingredient
-                    .toLocaleUpperCase()
-                    .includes(substring.toLocaleUpperCase());
+                    .toNormalize()
+                    .includes(substring.toNormalize());
             }) ||
             recipe.description
-                .toLocaleUpperCase()
-                .includes(substring.toLocaleUpperCase())
+                .toNormalize()
+                .includes(substring.toNormalize())
         );
     });
 }
