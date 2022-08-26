@@ -3,9 +3,9 @@ $color-primary: #D04F4F;
 $color-dark-grey: #525252;
 $color-light-grey: #E7E7E7;
 
-$bgc-blue: #3282F7;
-$bgc-green: #68D9A4;
-$bgc-red: #ED6454;
+$bgc-ingredients: #3282F7;
+$bgc-appareils: #68D9A4;
+$bgc-ustensiles: #ED6454;
 $bgc-grey: #E7E7E7;
 $bgc-dark-grey: #C7BEBE;
 
@@ -17,3 +17,8 @@ $body-font: 'Lato', sans-serif;
 $description-font: 'Roboto', sans-serif;
 
 $border-radius-xs: 5px;
+
+$keywords:
+        ingredients $bgc-ingredients,
+        appareils $bgc-appareils,
+        ustensiles $bgc-ustensiles;

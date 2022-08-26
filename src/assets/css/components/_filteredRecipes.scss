@@ -1,22 +1,21 @@
 @use '../utils/index' as u;
 
 .results__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
 
-  &__item {
-    max-width: 380px;
-    
-    img {
-      display: block;
-      background-color: u.$bgc-dark-grey;
+    &__item {
+        max-width: 380px;
+
+        img {
+            display: block;
+            background-color: u.$bgc-dark-grey;
+        }
+
+        &__content {
+            background-color: u.$bgc-grey;
+            padding: 1rem;
+        }
     }
-    
-    &__content {
-      background-color: u.$bgc-grey;
-      padding: 1rem;
-  };
-  }
-
 }
