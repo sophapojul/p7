@@ -1,48 +1,23 @@
-export default function Dropdown(name,options) {
-    this.name = name;
+export default function Dropdown(name, options) {
+    this.name = name.toNormalize();
     this.options = options;
-    this.list = document.querySelector('#keyword');
-    this.listItem = document.createElement('li');
-    this.listItem.classList.add(`keyword__item, ${this.name}`);
-    this.listItem.innerHTML = `
-        <div class="dropdown">
-            <div class="dropdown__btn" data-name="${this.name}">${this.name}</div>
-            <div class="dropdown__content" data-active="false">
-                <input class="dropdown__content__input" type="text" placeholder="Rechercher un ${this.name.toLowerCase().slice(0, -1)}">
-                <ul class="dropdown__content__options"></ul>
-            </div>
-        </div>
-    `;
-    this.list.appendChild(this.listItem);
-    this.btn = this.listItem.querySelector(`div[data-name=${this.name}]`);
-    this.content = this.listItem.querySelector('.dropdown__content');
-
-    this.openDropdown = function () {
-        this.content.dataset.active = 'true';
-    };
-
-    this.closeDropdown = function () {
-        this.content.dataset.active = 'false';
-    };
-
-    this.btn.addEventListener('click', () => {
-        this.content.dataset.active === 'false' ? this.openDropdown() : this.closeDropdown();
-        // this.content.dataset.active ? this.closeDropdown() : this.openDropdown();
+    this.div = document.querySelector(`.${this.name}`);
+    this.ul = document.querySelector(`#options-${this.name}`);
+    this.options.forEach((option) => {
+        this.li = document.createElement('li');
+        this.li.classList.add('dropdown__content__options__item');
+        this.li.innerText = `${option}`;
+        this.ul.appendChild(this.li);
     });
-
-    this.render = function () {
-        this.options.forEach(option => {
-            this.option = document.createElement('li');
-            this.option.dataset.value = `${option}`;
-            this.option.dataset.selected = 'false';
-            this.option.innerHTML = `${option}`;
-            this.listItem.querySelector('ul').appendChild(this.option);
-                this.option.addEventListener('click', () => {
-                    this.option.dataset.selected = 'true';
-                // this.option.dataset.selected === 'false' ? this.option.dataset.selected = 'true' : this.option.dataset.selected = 'false';
-                    // this.option.classList.toggle('search__dropdown__content__options__tag__item--selected');
-            })
-        }
-        );
-    }
+    this.li = this.ul.querySelectorAll('.dropdown__content__options__item');
+    this.input = this.ul.parentElement.firstElementChild;
+    this.input.addEventListener('input', (ev) => {
+        this.li.forEach((item) => {
+            if (item.innerText.toNormalize().includes(ev.target.value)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
 }

@@ -1,14 +1,14 @@
 export default function Tag(tag) {
     this.tag = tag;
-    this.tagElement = document.createElement('li');
-    this.tagElement.classList.add('search__tag');
-    this.tagElement.innerHTML = `
-        <span class="search__tag__item">${ this.tag }</span><span class="search__tag__close">&times;</span>
-    `;
-    this.target = document.querySelector('#tag-ingredients')
-    this.target.appendChild(this.tagElement);
-    this.tagElement.lastElementChild.addEventListener('click', () => {
-        this.tagElement.remove();
-    })
-
+    this.template = document.querySelector('#tag-template');
+    this.list = document.querySelector('#tag-list');
+    this.item = this.template.content.cloneNode(true);
+    this.item.querySelector('.search__tag__item').innerText = this.tag;
+    this.list.appendChild(this.item);
+    this.close = this.list.querySelectorAll('svg');
+    this.close.forEach((item) =>
+        item.addEventListener('click', (ev) => {
+            ev.currentTarget.parentElement.remove();
+        })
+    );
 }
