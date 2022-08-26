@@ -1,3 +1,3 @@
 String.prototype.toCapitalize = function () {
-    return this.replace(/^./, (str) => str.toUpperCase());
+    return this.toLowerCase().replace(/^./, (str) => str.toUpperCase());
 };
