@@ -7,6 +7,7 @@ import Tag from './constructor/tag.js';
 import Keyword from './constructor/keyword.js';
 import Dropdown from './constructor/dropdown.js';
 import searchRecipes from './filter/searchRecipes.js';
+import debounce from './utils/debounce.js';
 
 /**
  * It takes an array of values and returns an array of unique values
@@ -105,9 +106,10 @@ function filteredRecipesDisplay(recipesArray, search) {
 function renderRecipesBySearch(keywordArray) {
     document
         .querySelector('.search__form__input')
-        .addEventListener('input', function (ev) {
+        .addEventListener('input', debounce(function (ev) {
             ev.preventDefault();
-            if (ev.target.value.length < 3) {
+            const query = this.value;
+            if (this.length < 3) {
                 keywords.forEach((keyword) => {
                     const ul = document.querySelector(`#options-${keyword}`);
                     ul.querySelectorAll(
@@ -116,20 +118,20 @@ function renderRecipesBySearch(keywordArray) {
                         item.style.display = 'block';
                     });
                 });
-                return filteredRecipesDisplay(recipes, ev.target.value);
+                return filteredRecipesDisplay(recipes, query);
             }
-            filteredRecipesDisplay(recipes, ev.target.value);
+            filteredRecipesDisplay(recipes, query);
             const ingredients = getIngredients(
-                searchRecipes(recipes, ev.target.value),
-                ev.target.value
+                searchRecipes(recipes, query),
+                query
             );
             const appliances = getAppliances(
-                searchRecipes(recipes, ev.target.value),
-                ev.target.value
+                searchRecipes(recipes, query),
+                query
             );
             const utensils = getUtensils(
-                searchRecipes(recipes, ev.target.value),
-                ev.target.value
+                searchRecipes(recipes, query),
+                query
             );
             keywordArray = [
                 ['ingredients', ingredients],
@@ -147,7 +149,7 @@ function renderRecipesBySearch(keywordArray) {
                     }
                 });
             });
-        });
+        }, 400));
 }
 
 /**
