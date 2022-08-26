@@ -4,18 +4,24 @@ import '/src/utils/toCapitalize.js';
 import recipes from './data/recipes.js';
 import Recipes from './constructor/recipes.js';
 import Tag from './constructor/tag.js';
-import searchRecipes from './filter/searchRecipes.js';
 import Keyword from './constructor/keyword.js';
 import Dropdown from './constructor/dropdown.js';
+import searchRecipes from './filter/searchRecipes.js';
 
-// filter unique values in array
+/**
+ * It takes an array of values and returns an array of unique values
+ * @param {Array} array
+ * @returns {any[]}
+ */
 function uniqueValues(array) {
     return Array.from(new Set(array));
 }
 
-const keywords = ['ingredients', 'appareils', 'ustensiles'];
-const tagList = document.querySelector('#tag-list');
-
+/**
+ * It takes an array of recipes, and returns an array of unique ingredients
+ * @param {Array} array - an array of objects
+ * @type {any[]}
+ */
 const ingredients = uniqueValues(
     { recipes }.recipes
         .map((recipe) =>
@@ -24,38 +30,34 @@ const ingredients = uniqueValues(
         .flat()
         .map((ingredient) => ingredient.toCapitalize())
 );
+/**
+ * It takes an array of recipes, and returns an array of unique appliances
+ * @param {Array} array - an array of objects
+ * @type {any[]}
+ */
 const appliances = uniqueValues(
     { recipes }.recipes
         .map((recipe) => recipe.appliance)
         .flat()
         .map((appliance) => appliance.toCapitalize())
 );
+/**
+ * It takes an array of recipes, and returns an array of unique utensils
+ * @param {Array} array - an array of objects
+ * @type {any[]}
+ */
 const utensils = uniqueValues(
     { recipes }.recipes
         .map((recipe) => recipe.utensils)
         .flat()
         .map((obj) => obj.toCapitalize())
 );
-const keywordArray = [
-    ['Ingrédients', ingredients],
-    ['Appareils', appliances],
-    ['Ustensiles', utensils],
-];
-const keywordObject = {
-    ingredients: [],
-    appliances: [],
-    utensils: [],
-};
 
-function dispatch(keyword) {
-    // TODO construct array of keywords and array of elements
-    for (let key in keywordObject) {
-        keywordObject[key] = keywordArray.filter((item) => item[0] === keyword);
-    }
-}
-
-dispatch('ingredients');
-
+/**
+ * It takes an array of recipes, and returns an array of unique ingredients
+ * @param recipesArray - an array of recipes
+ * @returns An array of ingredients
+ */
 function getIngredients(recipesArray) {
     const ingredients = uniqueValues(
         recipesArray
@@ -68,6 +70,11 @@ function getIngredients(recipesArray) {
     return ingredients;
 }
 
+/**
+ * It takes an array of recipes and returns an array of unique appliances
+ * @param recipesArray - an array of recipes
+ * @returns An array of unique appliances.
+ */
 function getAppliances(recipesArray) {
     const appliances = uniqueValues(
         recipesArray
@@ -77,6 +84,11 @@ function getAppliances(recipesArray) {
     return appliances;
 }
 
+/**
+ * It takes an array of recipes, and returns an array of unique utensils
+ * @param recipesArray - an array of recipes
+ * @returns An array of unique utensils
+ */
 function getUtensils(recipesArray) {
     const utensils = uniqueValues(
         recipesArray
@@ -87,6 +99,25 @@ function getUtensils(recipesArray) {
     return utensils;
 }
 
+const tagList = document.querySelector('#tag-list');
+
+const keywords = ['ingredients', 'appareils', 'ustensiles'];
+
+const keywordArray = [
+    ['Ingrédients', ingredients],
+    ['Appareils', appliances],
+    ['Ustensiles', utensils],
+];
+
+const optionsListObj = {};
+const optionsListArray = [ingredients, appliances, utensils];
+const keywordObject = Object.assign(optionsListObj, optionsListArray);
+
+/**
+ * It takes in an array of recipes and a search term, and then displays the recipes that match the search term
+ * @param recipesArray - an array of objects that contains all the recipes
+ * @param search - the search term
+ */
 function filteredRecipesDisplay(recipesArray, search) {
     let result;
     search.length > 2
@@ -101,16 +132,12 @@ function filteredRecipesDisplay(recipesArray, search) {
     ).length;
     console.log('recipesNumber: ', recipesNumber);
 }
-
-function displayOptions(obj, string) {
-    const ul = document.querySelector(`#options-${obj.key}`);
-    if (obj.value.includes(string)) {
-        ul.querySelector(`#${obj.value}`).style.display = 'block';
-    } else {
-        ul.querySelector(`#${obj.value}`).style.display = 'none';
-    }
-}
-
+/**
+ * It takes an array of keywords, and when the user types in the search bar, it filters the recipes and displays them, and
+ * it also filters the dropdown items
+ * @param keywordArray - an array of arrays, each containing a keyword and an array of values
+ * @returns the filtered recipes.
+ */
 function renderRecipesBySearch(keywordArray) {
     document
         .querySelector('.search__form__input')
@@ -145,7 +172,7 @@ function renderRecipesBySearch(keywordArray) {
                 ['appareils', appliances],
                 ['ustensiles', utensils],
             ];
-            // TODO invisible the dropdown items
+            // TODO set invisible the dropdown items
             keywordArray.forEach((keyword) => {
                 const ul = document.querySelector(`#options-${keyword[0]}`);
                 ul.querySelectorAll('li').forEach((item) => {
@@ -155,24 +182,14 @@ function renderRecipesBySearch(keywordArray) {
                         item.style.display = 'none';
                     }
                 });
-                // ul.innerHTML = '';
-                // new Dropdown(keyword[0], keyword[1]);
             });
         });
 }
 
-const optionsListObj = {};
-const optionsArray = ['ingredients', 'appareils', 'ustensiles'];
-console.log('ingredients: ', ingredients);
-console.log('appliances: ', appliances);
-console.log('utensils: ', utensils);
-const optionsListArray = [ingredients, appliances, utensils];
-Object.assign(optionsListObj, optionsListArray);
-// keywords.forEach((keyword, index) => {
-//     optionsListObj[keyword] = optionsListArray[index];
-// });
-console.log('optionsListObject: ', optionsListObj);
-
+/**
+ *
+ * @type {MutationObserver}
+ */
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         console.log('mutation: ', mutation);
@@ -193,8 +210,6 @@ const observer = new MutationObserver((mutations) => {
                 mutation.removedNodes[0].childNodes[1].textContent;
             console.log('removedTag: ', removedTag);
         }
-        console.log('mutation.target: ', mutation.target);
-        // searchRecipes(recipes, mutation.addedNodes[1]);
     });
 });
 
@@ -203,6 +218,10 @@ observer.observe(tagList, {
     subtree: true,
 });
 
+/**
+ * It takes an element as an argument, and when the user clicks on the element, it creates a tag with the text of the element, and it also filters the recipes by the text of the element.
+ * @param elt
+ */
 function tagSelect(elt) {
     const text = elt.innerText;
     const listTags = Array.from(
@@ -236,18 +255,26 @@ function tagSelect(elt) {
 
 renderRecipesBySearch();
 
+/* Creating a new dropdown for each array in the keywordArray. */
 keywordArray.forEach((arr) => {
     const keywordItem = new Keyword(...arr);
     const { keyword, options } = keywordItem;
     new Dropdown(keyword, options);
 });
 
+/* Adding an event listener to each dropdown item. */
 document.querySelectorAll('.dropdown__content__options__item').forEach((li) => {
     li.addEventListener('click', function () {
         tagSelect(this);
     });
 });
 
+/**
+ * Return an array of recipes that contain the ingredient passed in.
+ * @param {String} ingredient - the ingredient you want to search for
+ * @param {Array} recipesArray - an array of recipes
+ * @returns {Array} An array of recipes that contain the ingredient.
+ */
 function getRecipesByIngredient(ingredient, recipesArray) {
     const recipes = recipesArray.filter((recipe) =>
         recipe.ingredients.some(
@@ -256,10 +283,3 @@ function getRecipesByIngredient(ingredient, recipesArray) {
     );
     return recipes;
 }
-
-console.log(
-    'getRecipesByIngredient(ingredients[0]): ',
-    getRecipesByIngredient('sucre', recipes)
-);
-
-console.log(typeof recipes[0]);
