@@ -1,5 +1,4 @@
 export default function Recipes(recipe) {
-    this.recipe = recipe;
     const { id, name, time, description, ingredients, appliance, utensils } =
         recipe;
     this.id = id;
@@ -37,8 +36,6 @@ export default function Recipes(recipe) {
         this.item
             .querySelector('.results__list__item__content__ingredients')
             .appendChild(this.li);
-        // this.item.querySelector('.ingredients__item__title').innerText = `${ingredient.ingredient}  :`;
-        // this.item.querySelector('.ingredients__item__text').innerText = `${ingredient.quantity} ${ingredient.unit}`;
     });
     this.list.appendChild(this.item);
 }

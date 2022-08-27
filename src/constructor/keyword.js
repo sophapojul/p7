@@ -52,7 +52,7 @@ export default function Keyword(keyword, options) {
     this.close = this.content.querySelector(
         `#close-${this.keyword.toNormalize()}`
     );
-    this.btn.addEventListener('click', (ev) => {
+    this.btn.addEventListener('click', () => {
         document.querySelectorAll('.dropdown__content').forEach((item) => {
             item.dataset.active === 'true'
                 ? ((item.dataset.active = 'false'),
@@ -85,7 +85,7 @@ export default function Keyword(keyword, options) {
     this.input = this.content.querySelector(
         `#input-${this.keyword.toNormalize()}`
     );
-    this.close.addEventListener('click', (ev) => {
+    this.close.addEventListener('click', () => {
         this.content.dataset.active === 'false'
             ? this.openDropdown()
             : this.closeDropdown();
@@ -97,13 +97,13 @@ export default function Keyword(keyword, options) {
         }
     });
 
-    this.openDropdown = function () {
+    this.openDropdown = () => {
         this.content.dataset.active = 'true';
         this.btn.style.display = 'none';
         this.input.focus();
     };
 
-    this.closeDropdown = function () {
+    this.closeDropdown = () => {
         this.content.dataset.active = 'false';
         this.btn.style.display = 'flex';
         this.input.value = '';

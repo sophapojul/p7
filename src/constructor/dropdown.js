@@ -13,10 +13,11 @@ export default function Dropdown(name, options) {
     this.input = this.ul.parentElement.firstElementChild;
     this.input.addEventListener('input', (ev) => {
         this.li.forEach((item) => {
-            if (item.innerText.toNormalize().includes(ev.target.value)) {
-                item.style.display = 'block';
+            const { style, innerText } = item;
+            if (innerText.toNormalize().includes(ev.target.value)) {
+                style.display = 'block';
             } else {
-                item.style.display = 'none';
+                style.display = 'none';
             }
         });
     });
