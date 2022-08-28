@@ -23,7 +23,7 @@ function uniqueValues(array) {
  * @returns An array of ingredients
  */
 function getIngredients(recipesArray) {
-    const ingredients = uniqueValues(
+    return uniqueValues(
         recipesArray
             .map((recipe) => recipe.ingredients)
             .map((arr) =>
@@ -31,7 +31,6 @@ function getIngredients(recipesArray) {
             )
             .flat()
     );
-    return ingredients;
 }
 
 /**
@@ -40,12 +39,11 @@ function getIngredients(recipesArray) {
  * @returns An array of unique appliances.
  */
 function getAppliances(recipesArray) {
-    const appliances = uniqueValues(
+    return uniqueValues(
         recipesArray
             .map((recipe) => recipe.appliance.toNormalize().toCapitalize())
             .flat()
     );
-    return appliances;
 }
 
 /**
@@ -54,101 +52,90 @@ function getAppliances(recipesArray) {
  * @returns An array of unique utensils
  */
 function getUtensils(recipesArray) {
-    const utensils = uniqueValues(
+    return uniqueValues(
         recipesArray
             .map((recipe) => recipe.utensils)
             .map((arr) => arr.map((obj) => obj.toNormalize().toCapitalize()))
             .flat()
     );
-    return utensils;
 }
 
 const tagList = document.querySelector('#tag-list');
 
 const keywords = ['ingredients', 'appareils', 'ustensiles'];
 
-const keywordArray = [
-    ['Ingrédients', getIngredients(recipes)],
-    ['Appareils', getAppliances(recipes)],
-    ['Ustensiles', getUtensils(recipes)],
-];
-
-const optionsListObj = {};
-const optionsListArray = [getIngredients(recipes), getAppliances(recipes), getUtensils(recipes)];
-const keywordObject = Object.assign(optionsListObj, optionsListArray);
+function getKeywordArray(recipesArray) {
+    const ingredients = getIngredients(recipesArray);
+    const appliances = getAppliances(recipesArray);
+    const utensils = getUtensils(recipesArray);
+    return [
+        ['ingredients', ingredients],
+        ['appareils', appliances],
+        ['ustensiles', utensils],
+    ];
+}
 
 /**
  * It takes in an array of recipes and a search term, and then displays the recipes that match the search term
  * @param recipesArray - an array of objects that contains all the recipes
  * @param search - the search term
+ * @returns {Array} An array of recipes that match the search term.
  */
 function filteredRecipesDisplay(recipesArray, search) {
-    let result;
-    search.length > 2
-        ? (result = searchRecipes(recipesArray, search))
-        : (result = []);
+    const { length } = search;
     const ul = document.querySelector('.results__list');
     ul.innerHTML = '';
-    search.length > 2 ? result.forEach((recipe) => new Recipes(recipe)) : '';
-    // calculate number of recipes
-    const recipesNumber = document.querySelectorAll(
-        '.results__list__item'
-    ).length;
-    console.log('recipesNumber: ', recipesNumber);
+    let result;
+    if (length > 2) {
+        result = searchRecipes(recipesArray, search);
+        return result.forEach((recipe) => new Recipes(recipe));
+    }
+    return [];
+    // const recipesNumber = document.querySelectorAll(
+    //     '.results__list__item'
+    // ).length;
+    // console.log('recipesNumber: ', recipesNumber);
 }
+
 /**
- * It takes an array of keywords, and when the user types in the search bar, it filters the recipes and displays them, and
- * it also filters the dropdown items
- * @param keywordArray - an array of arrays, each containing a keyword and an array of values
- * @returns the filtered recipes.
+ * It takes the input from the search bar and filters the recipes based on the input
+ * @returns {Array} An array of recipes that match the input.
  */
-function renderRecipesBySearch(keywordArray) {
-    document
-        .querySelector('.search__form__input')
-        .addEventListener('input', debounce(function (ev) {
+function renderRecipesBySearch() {
+    document.querySelector('.search__form__input').addEventListener(
+        'input',
+        debounce((ev) => {
             ev.preventDefault();
-            const query = this.value;
-            if (this.length < 3) {
+            const query = ev.target.value;
+            if (ev.target.length < 3) {
                 keywords.forEach((keyword) => {
                     const ul = document.querySelector(`#options-${keyword}`);
                     ul.querySelectorAll(
                         '.dropdown__content__options__item'
                     ).forEach((item) => {
-                        item.style.display = 'block';
+                        const { style } = item;
+                        style.display = 'block';
                     });
                 });
                 return filteredRecipesDisplay(recipes, query);
             }
             filteredRecipesDisplay(recipes, query);
-            const ingredients = getIngredients(
-                searchRecipes(recipes, query),
-                query
-            );
-            const appliances = getAppliances(
-                searchRecipes(recipes, query),
-                query
-            );
-            const utensils = getUtensils(
-                searchRecipes(recipes, query),
-                query
-            );
-            keywordArray = [
-                ['ingredients', ingredients],
-                ['appareils', appliances],
-                ['ustensiles', utensils],
-            ];
             // TODO set invisible the dropdown items
-            keywordArray.forEach((keyword) => {
-                const ul = document.querySelector(`#options-${keyword[0]}`);
-                ul.querySelectorAll('li').forEach((item) => {
-                    if (keyword[1].includes(item.innerText)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-        }, 400));
+            return getKeywordArray(searchRecipes(recipes, query)).forEach(
+                (keyword) => {
+                    const ul = document.querySelector(`#options-${keyword[0]}`);
+                    ul.querySelectorAll('li').forEach((item) => {
+                        const { innerText, style } = item;
+                        if (keyword[1].includes(innerText)) {
+                            style.display = 'block';
+                        } else {
+                            style.display = 'none';
+                        }
+                    });
+                }
+            );
+        }, 400)
+    );
 }
 
 /**
@@ -157,23 +144,12 @@ function renderRecipesBySearch(keywordArray) {
  */
 const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-        console.log('mutation: ', mutation);
         if (mutation.addedNodes.length > 0) {
-            console.log(
-                'mutation.addedNodes: ',
-                mutation.addedNodes[1].childNodes[1].textContent
-            );
-            const addedTag = mutation.addedNodes[1].childNodes[1].textContent;
-            console.log('addedTag: ', addedTag);
+            // const addedTag = mutation.addedNodes[1].childNodes[1].textContent;
         }
         if (mutation.removedNodes.length > 0) {
-            console.log(
-                'mutation.removedNodes: ',
-                mutation.removedNodes[0].childNodes[1].textContent
-            );
-            const removedTag =
-                mutation.removedNodes[0].childNodes[1].textContent;
-            console.log('removedTag: ', removedTag);
+            // const removedTag =
+            //     mutation.removedNodes[0].childNodes[1].textContent;
         }
     });
 });
@@ -192,36 +168,15 @@ function tagSelect(elt) {
     const listTags = Array.from(
         document.querySelectorAll('.search__tag__item')
     );
-    if (listTags.length > 0) {
-        listTags.some((tag) => tag.innerText === text) ? null : new Tag(text);
-    } else {
+    if (!listTags.some((tag) => tag.innerText === text)) {
         new Tag(text);
     }
-    const tags = listTags.map((tag) => tag.innerText);
-    if (tags.length > 0) {
-        const results = [];
-        tags.map((tag) => {
-            const result = searchRecipes(recipes, tag);
-            results.push(result);
-            console.log('result: ', result);
-            const resultRecipes = results.reduce((a, b) =>
-                a.filter((x) => b.includes(x))
-            );
-            console.log('resultRecipes: ', resultRecipes);
-        });
-    }
-    let tagList = document.querySelector('#tag-list');
-    console.log('tagList: ', tagList);
-    // observer.observe(tagList, {
-    //     childList: true,
-    // });
-    filteredRecipesDisplay(recipes, text); // filter all keywords
 }
 
 renderRecipesBySearch();
 
 /* Creating a new dropdown for each array in the keywordArray. */
-keywordArray.forEach((arr) => {
+getKeywordArray(recipes).forEach((arr) => {
     const keywordItem = new Keyword(...arr);
     const { keyword, options } = keywordItem;
     new Dropdown(keyword, options);
@@ -229,22 +184,7 @@ keywordArray.forEach((arr) => {
 
 /* Adding an event listener to each dropdown item. */
 document.querySelectorAll('.dropdown__content__options__item').forEach((li) => {
-    li.addEventListener('click', function () {
-        tagSelect(this);
+    li.addEventListener('click', (ev) => {
+        tagSelect(ev.target);
     });
 });
-
-/**
- * Return an array of recipes that contain the ingredient passed in.
- * @param {String} ingredient - the ingredient you want to search for
- * @param {Array} recipesArray - an array of recipes
- * @returns {Array} An array of recipes that contain the ingredient.
- */
-function getRecipesByIngredient(ingredient, recipesArray) {
-    const recipes = recipesArray.filter((recipe) =>
-        recipe.ingredients.some(
-            (ingredient) => ingredient.ingredient === ingredient
-        )
-    );
-    return recipes;
-}
