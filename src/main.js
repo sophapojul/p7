@@ -1,13 +1,12 @@
 import '../css/style.scss';
-import './utils/toNormalize.js';
-import './utils/toCapitalize.js';
-import recipes from './data/recipes.js';
-import Recipes from './constructor/recipes.js';
-import Tag from './constructor/tag.js';
-import Keyword from './constructor/keyword.js';
-import Dropdown from './constructor/dropdown.js';
-import searchRecipes from './filter/searchRecipes.js';
-import debounce from './utils/debounce.js';
+import './utils/toNormalize';
+import recipes from './data/recipes';
+import Recipes from './constructor/recipes';
+import Tag from './constructor/tag';
+import Keyword from './constructor/keyword';
+import Dropdown from './constructor/dropdown';
+import searchRecipes from './filter/searchRecipes';
+import debounce from './utils/debounce';
 
 /**
  * It takes an array of values and returns an array of unique values
