@@ -15,6 +15,7 @@ Object.defineProperties(String.prototype, {
     toNormalize: {
         value() {
             return this.normalize('NFD')
+                .trim()
                 .replace(/[\u0300-\u036f]/g, '')
                 .toLowerCase();
         },
