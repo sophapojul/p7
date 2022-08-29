@@ -1,3 +1,8 @@
+/**
+ * It creates a dropdown menu with the given name and options
+ * @param {String} name - The name of the dropdown.
+ * @param {Array} options - an array of strings that will be the options of the dropdown
+ */
 export default function Dropdown(name, options) {
     this.name = name.toNormalize();
     this.options = options;

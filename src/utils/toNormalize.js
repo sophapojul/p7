@@ -3,6 +3,8 @@
 //         .replace(/[\u0300-\u036f]/g, '')
 //         .toLowerCase();
 // };
+
+/* Adding methods to the String prototype. */
 Object.defineProperties(String.prototype, {
     toCapitalize: {
         value() {
