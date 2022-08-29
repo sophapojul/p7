@@ -184,20 +184,22 @@ const observer = new MutationObserver(() => {
     const filteredRecipesByTag = getRecipesByTags(tags, recipes).map((id) =>
         recipes.find((item) => item.id === id)
     );
-    console.log('filteredRecipesByTag: ', filteredRecipesByTag);
     filteredRecipesByTag.forEach((recipe) => new Recipes(recipe));
     getKeywordArray(filteredRecipesByTag).forEach((keyword) => {
-        const ul = document.querySelector(`#options-${keyword[0]}`);
-        ul.querySelectorAll('li').forEach((item) => {
+        const opt = document.querySelector(`#options-${keyword[0]}`);
+        opt.querySelectorAll('li').forEach((item) => {
             const { innerText, style } = item;
-            if (keyword[1].includes(innerText)) {
-                style.display = 'block';
+            if (filteredRecipesByTag.length > 0) {
+                if (keyword[1].includes(innerText)) {
+                    style.display = 'block';
+                } else {
+                    style.display = 'none';
+                }
             } else {
-                style.display = 'none';
+                style.display = 'block';
             }
         });
     });
-    console.log('getKeywordArray: ', getKeywordArray(filteredRecipesByTag));
 });
 
 /**
