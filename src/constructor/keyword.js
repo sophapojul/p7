@@ -1,3 +1,8 @@
+/**
+ * It creates a dropdown menu with a search bar
+ * @param {String} keyword - the keyword that will be displayed in the dropdown button
+ * @param {Array} options - an array of strings
+ */
 export default function Keyword(keyword, options) {
     this.keyword = keyword;
     this.options = options;
@@ -64,24 +69,6 @@ export default function Keyword(keyword, options) {
             ? this.openDropdown()
             : this.closeDropdown();
     });
-    // this.btn.addEventListener('click', (ev) => {
-    //     console.log(ev.currentTarget);
-    //     this.btn.classList.toggle('dropdown__btn--active');
-    //     this.content = this.clone.querySelector('.dropdown__content');
-    //     this.content.classList.toggle('dropdown__content--active');
-    //     this.content.setAttribute('aria-expanded', 'true');
-    //     this.input = this.clone.querySelector('.dropdown__content__input');
-    //     this.input.addEventListener('input', (ev) => {
-    //         this.options.forEach(option => {
-    //             if (option.toNormalize().includes(ev.target.value)) {
-    //                 this.li = document.createElement('li');
-    //                 this.li.classList.add('dropdown__content__options__item');
-    //                 this.li.innerText = `${option}`;
-    //                 this.ul.appendChild(this.li);
-    //             }
-    //         });
-    //     });
-    // });
     this.input = this.content.querySelector(
         `#input-${this.keyword.toNormalize()}`
     );

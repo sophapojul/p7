@@ -1,3 +1,7 @@
+/**
+ * It takes a recipe object as an argument, and then creates a new DOM element for each recipe, and appends it to the DOM
+ * @param {Object} recipe - This is the object that contains all the data for the recipe.
+ */
 export default function Recipes(recipe) {
     this.recipe = recipe;
     const { id, name, time, description, ingredients, appliance, utensils } =
