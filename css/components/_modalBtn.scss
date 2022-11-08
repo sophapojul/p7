@@ -1,0 +1,14 @@
+@use '../utils' as u;
+
+.close-modal {
+  padding: u.rem(8) u.rem(10);
+  border: none;
+  border-radius: u.rem(5);
+  font-size: u.rem(18);
+  position: absolute;
+  top: u.rem(10);
+  right: u.rem(10);
+  cursor: pointer;
+  background: u.$bgc-ustensiles;
+  color: white;
+}
