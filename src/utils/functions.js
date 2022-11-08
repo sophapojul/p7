@@ -161,13 +161,14 @@ export function openModal() {
     document.addEventListener('click', closeModalByClick);
 }
 
-export function removeDisplayedRecipes() {
-    const displayedRecipes = document.querySelectorAll('.results__list__item');
-    displayedRecipes.forEach((recipe) => {
-        recipe.remove();
-        // removeKeywords();
-    });
-}
+// export function removeDisplayedRecipes() {
+// const displayedRecipes = document.querySelectorAll('.results__list__item');
+// displayedRecipes.forEach((recipe) => {
+// recipe.remove();
+// document.querySelector('.results__list').innerHTML = '';
+// removeKeywords();
+// });
+// }
 
 export function noResult() {
     const ul = document.querySelector('.results__list');
