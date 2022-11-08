@@ -1,4 +1,5 @@
 @use 'functions' as f;
+@use 'variables' as v;
 
 $breakpoints-up: (
         sm: f.rem(576),

@@ -1,22 +1,22 @@
 @use '../utils' as u;
 
 #tag {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
 
-    &-list {
-        @include u.flex-center(row);
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-}
-.search__tag {
+  &__list {
     @include u.flex-center(row);
-    justify-content: space-between;
-    gap: u.rem(13);
-    width: fit-content;
-    background-color: u.$bgc-ingredients;
-    color: u.$color-white;
-    border-radius: u.$border-radius-xs;
-    padding: u.rem(10) u.rem(20);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+.search__tag {
+  @include u.flex-center(row);
+  justify-content: space-between;
+  gap: u.rem(13);
+  width: fit-content;
+  color: u.$color-white;
+  border-radius: u.$border-radius-xs;
+  padding: u.rem(10) u.rem(20);
 }
