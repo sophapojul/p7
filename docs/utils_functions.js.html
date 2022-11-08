@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/functions.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/functions.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import './toNormalize';
+import { setAdvancedSearchField } from '../filter/filter';
+import Recipes from '../constructor/recipes';
+
+const keywordsArray = ['ingredients', 'appareils', 'ustensiles'];
+const modalContainer = document.querySelector('.modal-container');
+
+/**
+ * It takes an array as an argument, and returns a new array with all the duplicate values removed.
+ * @param { Array } array - The array to be filtered.
+ * @returns { Array } The filtered array.
+ */
+export function uniqueArrayValues(array) {
+    return Array.from(new Set(array));
+}
+
+/**
+ * It takes an array of values and returns an array of unique values
+ * @param {Array} array
+ * @returns {Array}
+ */
+export function uniqueValues(array) {
+    return Array.from(new Set(array));
+}
+
+/**
+ * @typedef {Array.&lt;Object>} Ingredients
+ * @property {string} ingredient - The name of the ingredient.
+ * @property {number} [quantity] - The quantity of the ingredient.
+ * @property {string} [unit] - The unit of the ingredient.
+ */
+
+/**
+ * @typedef {Array.&lt;Object>} Recipe
+ * @property {number} id - The id of the recipe.
+ * @property {string} name - The name of the recipe.
+ * @property {number} servings - The number of servings the recipe makes.
+ * @property {Ingredients} ingredients - An array of ingredients.
+ * @property {number} time - The time it takes to make the recipe.
+ * @property {string} description - A description of the recipe.
+ * @property {string} appliance - The appliance used to make the recipe.
+ * @property {Array.&lt;string>} utensils - An array of utensils used to make the recipe.
+ */
+
+/**
+ * It returns a clone of the template element with the given id
+ * @param {string} id - The id of the template element.
+ * @returns { DocumentFragment } A clone of the template element with the id of id.
+ */
+export function cloneTemplate(id) {
+    return document.getElementById(id).content.cloneNode(true);
+}
+
+/**
+ * It takes in an array of li elements and an array of keywords, and displays the li elements that contain the keywords
+ * @param {Array} liArray - an array of all the li elements in the dropdown menu
+ * @param {Array} keywordArray - an array of keywords that the user has typed in the search bar.
+ */
+export function displayKeywordsByMainSearch(liArray, keywordArray) {
+    liArray.forEach((keyword) => {
+        const { innerText, style } = keyword;
+        if (keywordArray[1].includes(innerText)) {
+            style.display = 'block';
+        } else {
+            style.display = 'none';
+        }
+    });
+}
+
+/**
+ * It takes an array of recipes and returns an array of arrays, each of which contains a keyword and an array of the values
+ * of that keyword
+ * @param {Recipes} recipesArray - an array of objects that contains all the recipes
+ */
+export function displayAdvancedSearchField(recipesArray) {
+    const advancedSearchField = setAdvancedSearchField(recipesArray);
+    advancedSearchField.forEach((field) => {
+        const ulKeyword = document.querySelector(`#options-${field[0]}`);
+        const liArray = Array.from(ulKeyword.querySelectorAll('li'));
+        displayKeywordsByMainSearch(liArray, field);
+    });
+}
+
+/**
+ * It takes an array of recipe objects, loops through each object, and creates a new instance of the Recipes class for each
+ * object
+ * @param {Recipes} recipesArray - an array of objects that contain the data for each recipe
+ */
+export function displayRecipesByMainSearch(recipesArray) {
+    if (document.querySelector('.results__list')) {
+        document.querySelector('.results__list').innerHTML = '';
+    }
+    recipesArray.forEach((recipe) => {
+        new Recipes(recipe);
+        // recipe.addEventListener('click', recipeListener);
+    });
+}
+
+/**
+ * Return a new array containing only the elements that are present in both arrays.
+ * @param {Array.&lt;number>} array1 - The first array to be compared.
+ * @param {Array.&lt;number>} array2 - The second array to be compared.
+ * @returns {Array.&lt;number>} An array containing the elements that are present in both arrays.
+ */
+export function arrayIntersection(array1, array2) {
+    return array1.filter((value) => array2.includes(value));
+}
+
+/**
+ * It removes the style attribute from all the list items in the unordered lists with the id options-keyword
+ */
+export function removeKeywords() {
+    keywordsArray.forEach((keyword) => {
+        const ul = document.querySelector(`#options-${keyword}`);
+        const liArray = Array.from(ul.querySelectorAll('li'));
+        liArray.forEach((li) => {
+            li.removeAttribute('style');
+        });
+    });
+}
+
+export function closeModalByEscape(ev) {
+    if (ev.key === 'Escape' &amp;&amp; modalContainer.classList.toggle('active')) {
+        closeModal();
+    }
+}
+
+export function closeModalByEnter(ev) {
+    if (ev.key === 'Enter' &amp;&amp; modalContainer.classList.toggle('active')) {
+        closeModal();
+    }
+}
+
+export function closeModalByClick(ev) {
+    if (
+        ev.target.classList.contains('overlay') &amp;&amp;
+        modalContainer.classList.toggle('active')
+    ) {
+        closeModal();
+    }
+}
+
+export function closeModal() {
+    modalContainer.classList.toggle('active');
+    document
+        .querySelector('.close-modal')
+        .removeEventListener('click', closeModal);
+    document.removeEventListener('keydown', closeModalByEscape);
+    document.removeEventListener('keydown', closeModalByEnter);
+    document.removeEventListener('click', closeModalByClick);
+}
+
+export function openModal() {
+    // const modalContent = document.querySelector('.modal__content');
+    modalContainer.classList.toggle('active');
+    document
+        .querySelector('.close-modal')
+        .addEventListener('click', closeModal);
+    document.addEventListener('keydown', closeModalByEscape);
+    document.addEventListener('keydown', closeModalByEnter);
+    document.addEventListener('click', closeModalByClick);
+}
+
+// export function removeDisplayedRecipes() {
+// const displayedRecipes = document.querySelectorAll('.results__list__item');
+// displayedRecipes.forEach((recipe) => {
+// recipe.remove();
+// document.querySelector('.results__list').innerHTML = '';
+// removeKeywords();
+// });
+// }
+
+export function noResult() {
+    const ul = document.querySelector('.results__list');
+    if (ul.innerHTML === '') {
+        ul.innerHTML = `&lt;li class="results__list__item">Aucune recette ne correspond à votre critère… vous pouvez chercher « tarte aux pommes », « poisson », etc.&lt;/li>`;
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayIntersection">arrayIntersection</a></li><li><a href="global.html#cloneTemplate">cloneTemplate</a></li><li><a href="global.html#displayAdvancedSearchField">displayAdvancedSearchField</a></li><li><a href="global.html#displayKeywordsByMainSearch">displayKeywordsByMainSearch</a></li><li><a href="global.html#displayRecipesByMainSearch">displayRecipesByMainSearch</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getRecipesByAppliance">getRecipesByAppliance</a></li><li><a href="global.html#getRecipesByDescription">getRecipesByDescription</a></li><li><a href="global.html#getRecipesByIngredient">getRecipesByIngredient</a></li><li><a href="global.html#getRecipesByMainSearch">getRecipesByMainSearch</a></li><li><a href="global.html#getRecipesByName">getRecipesByName</a></li><li><a href="global.html#getRecipesByTag">getRecipesByTag</a></li><li><a href="global.html#getRecipesByUtensil">getRecipesByUtensil</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#removeKeywords">removeKeywords</a></li><li><a href="global.html#setAdvancedSearchField">setAdvancedSearchField</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueArrayValues">uniqueArrayValues</a></li><li><a href="global.html#uniqueValues">uniqueValues</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Nov 08 2022 19:23:51 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

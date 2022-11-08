@@ -27,240 +27,184 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import '../css/style.scss';
-import './utils/toNormalize';
 import recipes from './data/recipes';
-import Recipes from './constructor/recipes';
-import Tag from './constructor/tag';
-import Keyword from './constructor/keyword';
+import SearchAdvancedField from './constructor/searchAdvancedField';
 import Dropdown from './constructor/dropdown';
-import searchRecipes from './filter/searchRecipes';
 import debounce from './utils/debounce';
+import observerCallback from './utils/observerCallback';
+import {
+    displayRecipesByMainSearch,
+    displayAdvancedSearchField,
+    arrayIntersection,
+} from './utils/functions';
+import {
+    tagSelect,
+    getRecipesByMainSearch,
+    setAdvancedSearchField,
+    getUtensils,
+    getIngredients,
+    getAppliances,
+    getRecipesByTag,
+} from './filter/filter';
 
-/**
- * It takes an array of values and returns an array of unique values
- * @param {Array} array
- * @returns {Array}
- */
-function uniqueValues(array) {
-    return Array.from(new Set(array));
-}
+const mainSearchInput = document.querySelector('.search__form__input');
+const tagList = document.querySelector('#tag__list');
 
-/**
- * It takes an array of recipes, and returns an array of unique ingredients
- * @param {Array} recipesArray - an array of recipes
- * @returns {Array} An array of ingredients
- */
-function getIngredients(recipesArray) {
-    return uniqueValues(
-        recipesArray
-            .map((recipe) => recipe.ingredients)
-            .map((arr) =>
-                arr.map((obj) => obj.ingredient.toNormalize().toCapitalize())
-            )
-            .flat()
-    );
-}
+/* Creating a new dropdown for each array in the advanced search field array. */
+setAdvancedSearchField(recipes).forEach((arr) => {
+    const searchAdvancedFieldItem = new SearchAdvancedField(...arr);
+    const { fieldName, options } = searchAdvancedFieldItem;
+    new Dropdown(fieldName, options);
+});
+const advancedSearchFieldInputList = document.querySelectorAll(
+    '.dropdown__content__input'
+);
+const keywordList = document.querySelectorAll(
+    '.dropdown__content__options__item'
+);
 
-/**
- * It takes an array of recipes and returns an array of unique appliances
- * @param {Array} recipesArray - an array of recipes
- * @returns {Array} An array of unique appliances.
- */
-function getAppliances(recipesArray) {
-    return uniqueValues(
-        recipesArray
-            .map((recipe) => recipe.appliance.toNormalize().toCapitalize())
-            .flat()
-    );
-}
-
-/**
- * It takes an array of recipes, and returns an array of unique utensils
- * @param {Array} recipesArray - an array of recipes
- * @returns {Array} An array of unique utensils
- */
-function getUtensils(recipesArray) {
-    return uniqueValues(
-        recipesArray
-            .map((recipe) => recipe.utensils)
-            .map((arr) => arr.map((obj) => obj.toNormalize().toCapitalize()))
-            .flat()
-    );
-}
-
-const tagList = document.querySelector('#tag-list');
-
-const keywords = ['ingredients', 'appareils', 'ustensiles'];
-
-/**
- * It takes an array of recipes and returns an array of arrays, each of which contains a keyword and an array of the
- * keywords that are associated with that keyword
- * @param {Array} recipesArray - an array of recipes
- * @returns {Array} An array of arrays.
- */
-function getKeywordArray(recipesArray) {
-    const ingredients = getIngredients(recipesArray);
-    const appliances = getAppliances(recipesArray);
-    const utensils = getUtensils(recipesArray);
-    return [
-        ['ingredients', ingredients],
-        ['appareils', appliances],
-        ['ustensiles', utensils],
-    ];
-}
-
-/**
- * It takes in an array of recipes and a search term, and then displays the recipes that match the search term
- * @param {Array} recipesArray - an array of objects that contains all the recipes
- * @param {String} search - the search term
- * @returns {Array} An array of recipes that match the search term.
- */
-function filteredRecipesDisplay(recipesArray, search) {
-    const { length } = search;
-    const ul = document.querySelector('.results__list');
-    ul.innerHTML = '';
-    let result;
-    if (length > 2) {
-        result = searchRecipes(recipesArray, search);
-        return result.forEach((recipe) => new Recipes(recipe));
-    }
-    return [];
-    // const recipesNumber = document.querySelectorAll(
-    //     '.results__list__item'
-    // ).length;
-    // console.log('recipesNumber: ', recipesNumber);
-}
-
-/**
- * It takes the input from the search bar and filters the recipes based on the input
- * @returns {Array} An array of recipes that match the input.
- */
-function renderRecipesBySearch() {
-    document.querySelector('.search__form__input').addEventListener(
-        'input',
-        debounce((ev) => {
-            ev.preventDefault();
-            const query = ev.target.value;
-            if (ev.target.length &lt; 3) {
-                keywords.forEach((keyword) => {
-                    const ul = document.querySelector(`#options-${keyword}`);
-                    ul.querySelectorAll(
-                        '.dropdown__content__options__item'
-                    ).forEach((item) => {
-                        const { style } = item;
-                        style.display = 'block';
-                    });
-                });
-                return filteredRecipesDisplay(recipes, query);
-            }
-            filteredRecipesDisplay(recipes, query);
-            // TODO set invisible the dropdown items
-            return getKeywordArray(searchRecipes(recipes, query)).forEach(
-                (keyword) => {
-                    const ul = document.querySelector(`#options-${keyword[0]}`);
-                    ul.querySelectorAll('li').forEach((item) => {
-                        const { innerText, style } = item;
-                        if (keyword[1].includes(innerText)) {
-                            style.display = 'block';
-                        } else {
-                            style.display = 'none';
-                        }
-                    });
-                }
-            );
-        }, 400)
-    );
-}
-
-// return an array of recipes that match the tags list
-/**
- * It takes an array of tags and an array of recipes, and returns an array of recipes that match the tags
- * @param {Array} tags - an array of tags that the user has selected
- * @param {Array} recipesArray - an array of objects that contain the recipes
- */
-function getRecipesByTags(tags, recipesArray) {
-    let results = [];
-    let filteredRecipes = [];
-    tags.map((tag) => {
-        const result = searchRecipes(recipesArray, tag).map(
-            (recipe) => recipe.id
-        );
-        if (results.length === 0) {
-            filteredRecipes = result;
-        } else {
-            results.concat(result);
-            filteredRecipes = result.filter((id) =>
-                filteredRecipes.includes(id)
-            );
-        }
-        results = uniqueValues([...results, ...result]);
-        return results;
-    });
-    return filteredRecipes;
-}
+const config = {
+    childList: true,
+    subtree: true,
+};
 
 /**
  *
  * @type {MutationObserver}
  */
-const observer = new MutationObserver(() => {
-    const ul = document.querySelector('.results__list');
-    const tags = Array.from(
-        document.querySelectorAll('.search__tag__item')
-    ).map((item) => item.textContent);
-    ul.innerHTML = '';
-    const filteredRecipesByTag = getRecipesByTags(tags, recipes).map((id) =>
-        recipes.find((item) => item.id === id)
-    );
-    filteredRecipesByTag.forEach((recipe) => new Recipes(recipe));
-    getKeywordArray(filteredRecipesByTag).forEach((keyword) => {
-        const opt = document.querySelector(`#options-${keyword[0]}`);
-        opt.querySelectorAll('li').forEach((item) => {
-            const { innerText, style } = item;
-            if (filteredRecipesByTag.length > 0) {
-                if (keyword[1].includes(innerText)) {
-                    style.display = 'block';
-                } else {
-                    style.display = 'none';
-                }
-            } else {
-                style.display = 'block';
-            }
-        });
+const observer = new MutationObserver(observerCallback);
+
+observer.observe(tagList, config);
+
+/* Adding an event listener to each dropdown item. */
+keywordList.forEach((li) => {
+    li.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        tagSelect(ev.target);
+        li.parentElement.parentElement.firstElementChild.value = '';
     });
 });
 
-/**
- * It takes an element as an argument, and when the user clicks on the element, it creates a tag with the text of the element, and it also filters the recipes by the text of the element.
- * @param {HTMLLIElement} elt
- */
-function tagSelect(elt) {
-    const text = elt.innerText;
-    const listTags = Array.from(
-        document.querySelectorAll('.search__tag__item')
-    );
-    if (!listTags.some((tag) => tag.innerText === text)) {
-        new Tag(text);
-    }
-}
+// display all keywords in the advanced search field
+displayAdvancedSearchField(recipes);
 
-observer.observe(tagList, {
-    childList: true,
-});
+// get the filtered recipes from the main search term;
+mainSearchInput.addEventListener(
+    'input',
+    debounce((ev) => {
+        ev.preventDefault();
+        const query = ev.target.value.toNormalize();
+        const tagsList = Array.from(tagList.children);
+        const resultList = document.querySelector('.results__list');
+        if (tagsList.length === 0) {
+            if (query.length > 2) {
+                if (getRecipesByMainSearch(recipes, query).length > 0) {
+                    // display the recipes filtered by the main search term;
+                    displayRecipesByMainSearch(
+                        getRecipesByMainSearch(recipes, query)
+                    );
+                    // display the options filtered by the main search term for each fieldName;
+                    displayAdvancedSearchField(
+                        getRecipesByMainSearch(recipes, query)
+                    );
+                } else {
+                    // removeDisplayedRecipes();
+                    resultList.innerHTML = '';
+                    resultList.insertAdjacentHTML(
+                        'afterbegin',
+                        `&lt;p class="results__list__item__no-result">Aucune recette ne correspond à votre critère… vous pouvez chercher « tarte aux pommes », « poisson », etc.&lt;/p>`
+                    );
+                }
+            } else {
+                // display all the keywords;
+                displayAdvancedSearchField(recipes);
+                // removeKeywords();
+                // removeDisplayedRecipes();
+                resultList.innerHTML = '';
+            }
+        } else {
+            // get recipes by intersection of getRecipesByMainSearch(recipes, query) et getRecipesByTags
+            const recipesIdByMainSearch = getRecipesByMainSearch(
+                recipes,
+                query
+            ).map((recipe) => recipe.id);
+            const recipesIdByTag = tagsList
+                .map((tag) => tag.innerText)
+                .reduce(
+                    (acc, tag) => [
+                        ...getRecipesByTag(recipes, tag).map(
+                            (recipe) => recipe.id
+                        ),
+                        acc,
+                    ],
+                    []
+                )
+                .flat();
+            const result = arrayIntersection(
+                recipesIdByTag,
+                recipesIdByMainSearch
+            ).map((id) => recipes.find((recipe) => recipe.id === id));
+            if (result.length > 0) {
+                displayRecipesByMainSearch(result);
+                displayAdvancedSearchField(result);
+            } else {
+                // removeDisplayedRecipes();
+                resultList.innerHTML = '';
+                resultList.insertAdjacentHTML(
+                    'afterbegin',
+                    `&lt;p class="results__list__item__no-result">Aucune recette ne correspond à votre critère… vous pouvez chercher « tarte aux pommes », « poisson », etc.&lt;/p>`
+                );
+            }
+        }
+    }, 400)
+);
 
-renderRecipesBySearch();
-
-/* Creating a new dropdown for each array in the keywordArray. */
-getKeywordArray(recipes).forEach((arr) => {
-    const keywordItem = new Keyword(...arr);
-    const { keyword, options } = keywordItem;
-    new Dropdown(keyword, options);
-});
-
-/* Adding an event listener to each dropdown item. */
-document.querySelectorAll('.dropdown__content__options__item').forEach((li) => {
-    li.addEventListener('click', (ev) => {
-        tagSelect(ev.target);
+// get the filtered recipes from each advanced search field;
+advancedSearchFieldInputList.forEach((input) => {
+    input.addEventListener('input', (ev) => {
+        ev.preventDefault();
+        // debugger;
+        const search = document
+            .querySelector('.search__form__input')
+            .value.toNormalize();
+        const query = ev.target.value.toNormalize();
+        const fieldName = ev.target.parentElement.parentElement.id;
+        const ul = document.querySelector(`#options-${fieldName}`);
+        const liArray = Array.from(ul.querySelectorAll('li'));
+        let liFiltered;
+        switch (fieldName) {
+            case 'ingredients':
+                liFiltered = liArray.filter((li) =>
+                    getIngredients(
+                        getRecipesByMainSearch(recipes, search)
+                    ).includes(li.innerText)
+                );
+                break;
+            case 'appareils':
+                liFiltered = liArray.filter((li) =>
+                    getAppliances(
+                        getRecipesByMainSearch(recipes, search)
+                    ).includes(li.innerText)
+                );
+                break;
+            case 'ustensiles':
+                liFiltered = liArray.filter((li) =>
+                    getUtensils(
+                        getRecipesByMainSearch(recipes, search)
+                    ).includes(li.innerText)
+                );
+                break;
+            default:
+                break;
+        }
+        liFiltered.forEach((li) => {
+            const { innerText, style } = li;
+            if (innerText.toNormalize().includes(query)) {
+                style.display = 'block';
+            } else {
+                style.display = 'none';
+            }
+        });
     });
 });
 </code></pre>
@@ -273,13 +217,13 @@ document.querySelectorAll('.dropdown__content__options__item').forEach((li) => {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#filteredRecipesDisplay">filteredRecipesDisplay</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getKeywordArray">getKeywordArray</a></li><li><a href="global.html#getRecipesByTags">getRecipesByTags</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#renderRecipesBySearch">renderRecipesBySearch</a></li><li><a href="global.html#searchRecipes">searchRecipes</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueValues">uniqueValues</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayIntersection">arrayIntersection</a></li><li><a href="global.html#cloneTemplate">cloneTemplate</a></li><li><a href="global.html#displayAdvancedSearchField">displayAdvancedSearchField</a></li><li><a href="global.html#displayKeywordsByMainSearch">displayKeywordsByMainSearch</a></li><li><a href="global.html#displayRecipesByMainSearch">displayRecipesByMainSearch</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getRecipesByAppliance">getRecipesByAppliance</a></li><li><a href="global.html#getRecipesByDescription">getRecipesByDescription</a></li><li><a href="global.html#getRecipesByIngredient">getRecipesByIngredient</a></li><li><a href="global.html#getRecipesByMainSearch">getRecipesByMainSearch</a></li><li><a href="global.html#getRecipesByName">getRecipesByName</a></li><li><a href="global.html#getRecipesByTag">getRecipesByTag</a></li><li><a href="global.html#getRecipesByUtensil">getRecipesByUtensil</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#removeKeywords">removeKeywords</a></li><li><a href="global.html#setAdvancedSearchField">setAdvancedSearchField</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueArrayValues">uniqueArrayValues</a></li><li><a href="global.html#uniqueValues">uniqueValues</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Aug 29 2022 17:56:27 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Nov 08 2022 19:23:51 GMT+0100 (Central European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

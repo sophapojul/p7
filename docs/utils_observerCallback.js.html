@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils/observerCallback.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils/observerCallback.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { getRecipesByMainSearch, getRecipesByTag } from '../filter/filter';
+import recipes from '../data/recipes';
+import { arrayIntersection, displayAdvancedSearchField } from './functions';
+import Recipes from '../constructor/recipes';
+
+/**
+ *
+ * @param {NodeList} mutations
+ */
+
+export default function observerCallback(mutations) {
+    let recipesListByTags = [];
+
+    mutations.forEach((mutation) => {
+        // console.log(mutation.target.innerText.split(/\n/).length);
+        const { addedNodes, removedNodes } = mutation;
+        // get the list of tag(s) selected;
+        const selectedTagsInnerText = Array.from(
+            mutation.target.children
+        ).flatMap((child) => child.innerText);
+        const mainSearchInputValue = document
+            .querySelector('.search__form__input')
+            .value.toNormalize();
+        const ul = document.querySelector('.results__list');
+        // get the list of displayed recipes id;
+        const recipesIdList = Array.from(
+            ul.querySelectorAll('.results__list__item')
+        ).map((recipe) => parseInt(recipe.id.split('-')[1], 10));
+        ul.innerHTML = '';
+        if (addedNodes.length > 0) {
+            const lastTagInnerText = addedNodes[1].firstElementChild.innerText;
+            // get the list of recipes id that match the tags list
+            if (recipesListByTags.length === 0) {
+                recipesListByTags = getRecipesByTag(recipes, lastTagInnerText);
+            } else {
+                recipesListByTags = getRecipesByTag(
+                    recipesListByTags,
+                    lastTagInnerText
+                );
+            }
+            if (mainSearchInputValue === '') {
+                if (selectedTagsInnerText.length === 1) {
+                    // display the recipes that match the tags list;
+                    recipesListByTags.forEach((recipe) => {
+                        new Recipes(recipe);
+                    });
+                    // get the list of ingredients, appliances and utensils that match the search term and the tags
+                    displayAdvancedSearchField(recipesListByTags);
+                }
+            } else {
+                const recipesIdListByTags = recipesListByTags.map(
+                    (recipe) => recipe.id
+                );
+                // intersection of the two lists of recipes id;
+                const filteredIdRecipes = arrayIntersection(
+                    recipesIdList,
+                    recipesIdListByTags
+                );
+                // get the list of recipes that match the search term and the tags
+                const filteredRecipes = filteredIdRecipes.flatMap((id) =>
+                    recipes.filter((recipe) => recipe.id === id)
+                );
+                // display the recipes
+                filteredRecipes.forEach((recipe) => {
+                    new Recipes(recipe);
+                });
+                if (
+                    mainSearchInputValue !== '' ||
+                    selectedTagsInnerText.length > 1
+                ) {
+                    // get the list of ingredients, appliances and utensils that match the search term and the tags
+                    displayAdvancedSearchField(filteredRecipes);
+                }
+            }
+        } else if (removedNodes.length > 0) {
+            if (selectedTagsInnerText.length !== 0) {
+                // get the list of recipes id that match the tags list and the search term
+                debugger;
+                const recipesByTags = selectedTagsInnerText.reduce(
+                    (acc, tagInnerText) =>
+                        arrayIntersection(
+                            acc,
+                            getRecipesByTag(recipes, tagInnerText)
+                        ),
+                    getRecipesByTag(recipes, selectedTagsInnerText[0])
+                );
+                console.log('recipesByTags', recipesByTags);
+                if (ul.querySelector('.results__list__item__no-result')) {
+                    // ul.innerHTML = '';
+                    ul.removeChild(
+                        ul.querySelector('.results__list__item__no-result')
+                    );
+                }
+
+                recipesByTags.forEach((recipe) => {
+                    new Recipes(recipe);
+                });
+                // get the list of ingredients, appliances and utensils that match the search term and the tags
+                displayAdvancedSearchField(recipesByTags);
+            } else if (mainSearchInputValue.length > 2) {
+                getRecipesByMainSearch(recipes, mainSearchInputValue).forEach(
+                    (recipe) => {
+                        new Recipes(recipe);
+                    }
+                );
+                // get the list of ingredients, appliances and utensils that match the search term
+                displayAdvancedSearchField(
+                    getRecipesByMainSearch(recipes, mainSearchInputValue)
+                );
+            } else {
+                displayAdvancedSearchField(recipes);
+                ul.querySelector('.results__list__item__no-result')?.remove();
+            }
+        }
+    });
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayIntersection">arrayIntersection</a></li><li><a href="global.html#cloneTemplate">cloneTemplate</a></li><li><a href="global.html#displayAdvancedSearchField">displayAdvancedSearchField</a></li><li><a href="global.html#displayKeywordsByMainSearch">displayKeywordsByMainSearch</a></li><li><a href="global.html#displayRecipesByMainSearch">displayRecipesByMainSearch</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getRecipesByAppliance">getRecipesByAppliance</a></li><li><a href="global.html#getRecipesByDescription">getRecipesByDescription</a></li><li><a href="global.html#getRecipesByIngredient">getRecipesByIngredient</a></li><li><a href="global.html#getRecipesByMainSearch">getRecipesByMainSearch</a></li><li><a href="global.html#getRecipesByName">getRecipesByName</a></li><li><a href="global.html#getRecipesByTag">getRecipesByTag</a></li><li><a href="global.html#getRecipesByUtensil">getRecipesByUtensil</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#removeKeywords">removeKeywords</a></li><li><a href="global.html#setAdvancedSearchField">setAdvancedSearchField</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueArrayValues">uniqueArrayValues</a></li><li><a href="global.html#uniqueValues">uniqueValues</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Tue Nov 08 2022 19:23:51 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
