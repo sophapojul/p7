@@ -1,20 +1,28 @@
 @use '../utils' as u;
 
 .results__list {
-  display: flex;
+  /*display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 2rem;*/
+  display: grid;
+  justify-items: center;
+  grid-gap: 2rem;
   margin-top: 2rem;
 
-  &__item {
-    display: grid;
-    grid-template-rows: repeat(2, 1fr);
-    max-width: 380px;
-    overflow: hidden;
+  @media screen and (min-width: 675px) {
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  }
 
-    @media screen and (max-width: 672px) {
-      width: 100%;
+  &__item {
+    width: 100%;
+    //flex: 1 1 300px;
+
+    @media screen and (min-width: 675px) {
+      display: grid;
+      grid-template-rows: repeat(2, 1fr);
+      max-width: 380px;
+      overflow: hidden;
     }
 
     img {
@@ -59,7 +67,7 @@
           line-height: .6;
 
           & > * {
-            font-size: u.rem(12) !important;
+            font-size: u.rem(12);
             line-height: 1.2;
           }
 
@@ -71,12 +79,8 @@
       }
 
       &__description {
+        @include u.line-clamp(7, 1.2);
         grid-column: span 2;
-        max-width: 80%;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 7;
-        -webkit-box-orient: vertical;
         font-size: u.rem(12);
       }
     }
