@@ -143,7 +143,7 @@ export function getIngredients(recipesArray) {
             .flatMap((arr) =>
                 arr.map((obj) => obj.ingredient.toNormalize().toTitleCase())
             )
-    );
+    ).sort((a, b) => a.localeCompare(b));
 }
 
 /**
@@ -156,7 +156,7 @@ export function getAppliances(recipesArray) {
         recipesArray.map(({ appliance }) =>
             appliance.toNormalize().toTitleCase()
         )
-    );
+    ).sort((a, b) => a.localeCompare(b));
 }
 
 /**
@@ -169,7 +169,7 @@ export function getUtensils(recipesArray) {
         recipesArray
             .map(({ utensils }) => utensils)
             .flatMap((arr) => arr.map((obj) => obj.toNormalize().toTitleCase()))
-    );
+    ).sort((a, b) => a.localeCompare(b));
 }
 
 /**
