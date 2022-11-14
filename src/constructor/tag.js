@@ -1,8 +1,9 @@
-import { cloneTemplate } from '../utils/functions.js';
+import { cloneTemplate } from '../utils/functions';
 
 /**
- * It takes a tag, creates a new list fragment, adds the tag to the list fragment, and adds a close button to the list fragment
- * @param {String} tag - the tag that will be displayed in the tag list
+ * It takes a tag and a type, creates a new tag element, and appends it to the DOM
+ * @param {string} tag - the tag that will be displayed
+ * @param {string} type - the type of tag, either 'ingredients' or 'appareils' or 'ustensiles'
  */
 export default function Tag(tag, type) {
     this.tag = tag;
