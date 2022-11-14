@@ -11,8 +11,6 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  max-width: calc(100vw - 20px);
-  max-height: calc(100vh - 20px);
   overflow: auto;
 
   &.active {
@@ -23,7 +21,7 @@
 .overlay {
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.7);
   z-index: 1;
 }
@@ -52,5 +50,16 @@
     margin-bottom: u.rem(10);
     font-weight: 500;
   }
+
+  .results__list__item__content {
+    display: flex;
+    flex-wrap: wrap;
+
+    &__description {
+      display: block;
+      overflow: visible;
+    }
+  }
+
 }
 
