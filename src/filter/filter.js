@@ -22,30 +22,27 @@ import { uniqueArrayValues } from '../utils/functions';
  * @property {string[]} utensils - An array of utensils used to make the recipe.
  */
 
-/**
+/*
+/!**
  * It takes an array of recipes and a string pattern, and returns an array of recipes whose description includes the
  * pattern
  * @param {Recipes} recipesArray - an array of objects, each of which represents a recipe.
  * @param {string} pattern - The string to search for in the recipe description.
  * @returns {Recipes} An array of recipes that have a description that includes the pattern.
- */
-function getRecipesByDescription(recipesArray, pattern) {
-    return recipesArray.filter(({ description }) =>
-        description.toNormalize().includes(pattern.toNormalize())
-    );
+ *!/
+export function getRecipesByDescriptionByLoop(recipesArray, pattern) {
+    const patternNormalize = pattern.toNormalize();
+    const results = [];
+    for (let i = 0; i < recipesArray.length; i += 1) {
+        const recipe = recipesArray[i];
+        const descriptionNormalize = recipe.description.toNormalize();
+        if (descriptionNormalize.includes(patternNormalize)) {
+            results.push(recipe);
+        }
+    }
+    return results;
 }
-
-/**
- * It takes an array of recipes and a pattern, and returns an array of recipes whose names contain the pattern
- * @param {Recipes} recipesArray - an array of objects, each of which represents a recipe.
- * @param {string} pattern - The string that we want to search for in the recipe name.
- * @returns {Recipes} An array of recipes that have a name that includes the pattern.
- */
-function getRecipesByName(recipesArray, pattern) {
-    return recipesArray.filter(({ name }) =>
-        name.toNormalize().includes(pattern.toNormalize())
-    );
-}
+*/
 
 /**
  * The function returns an array of recipes that have at least one ingredient that includes the pattern
@@ -53,38 +50,87 @@ function getRecipesByName(recipesArray, pattern) {
  * @param {string} pattern - the string that we want to search for
  * @returns {Recipes} An array of recipes that have an ingredient that includes the pattern.
  */
-export function getRecipesByIngredient(recipesArray, pattern) {
-    return recipesArray.filter(({ ingredients }) =>
-        ingredients.find(({ ingredient }) =>
-            ingredient.toNormalize().includes(pattern.toNormalize())
-        )
-    );
+export function getRecipesByIngredientByLoop(recipesArray, pattern) {
+    const patternNormalize = pattern.toNormalize();
+    const results = [];
+    for (let i = 0; i < recipesArray.length; i += 1) {
+        const recipe = recipesArray[i];
+        const { ingredients } = recipe;
+        for (let j = 0; j < ingredients.length; j += 1) {
+            const ingredient = ingredients[j];
+            const ingredientNormalize = ingredient.ingredient.toNormalize();
+            if (ingredientNormalize.includes(patternNormalize)) {
+                results.push(recipe);
+                break;
+            }
+        }
+    }
+    return results;
 }
+
+/*
+/!**
+ * It takes an array of recipes and a pattern, and returns an array of recipes whose names contain the pattern
+ * @param {Recipes} recipesArray - an array of objects, each of which represents a recipe.
+ * @param {string} pattern - The string that we want to search for in the recipe name.
+ * @returns {Recipes} An array of recipes that have a name that includes the pattern.
+ *!/
+export function getRecipesByNameByLoop(recipesArray, pattern) {
+    const patternNormalize = pattern.toNormalize();
+    const results = [];
+    for (let i = 0; i < recipesArray.length; i += 1) {
+        const recipe = recipesArray[i];
+        const nameNormalize = recipe.name.toNormalize();
+        if (nameNormalize.includes(patternNormalize)) {
+            results.push(recipe);
+        }
+    }
+    return results;
+}
+*/
 
 /**
  * It filters the recipes array by the appliance substring
  * @param {Recipes} recipesArray - an array of recipes
- * @param {string} substring - the string you want to search for
+ * @param {string} pattern - the string you want to search for
  * @returns {Recipes} An array of recipes that have the substring in their appliance property.
  */
-export function getRecipesByAppliance(recipesArray, substring) {
-    return recipesArray.filter(({ appliance }) =>
-        appliance.toNormalize().includes(substring.toNormalize())
-    );
+export function getRecipesByApplianceByLoop(recipesArray, pattern) {
+    const patternNormalize = pattern.toNormalize();
+    const results = [];
+    for (let i = 0; i < recipesArray.length; i += 1) {
+        const recipe = recipesArray[i];
+        const applianceNormalize = recipe.appliance.toNormalize();
+        if (applianceNormalize.includes(patternNormalize)) {
+            results.push(recipe);
+        }
+    }
+    return results;
 }
 
 /**
- * It filters the recipesArray to return only the recipes that have a utensil that includes the substring
- * @param {Recipes} recipesArray - an array of recipes
- * @param {string} substring - the string you want to search for
- * @returns {Recipes} An array of recipes that have a utensil that includes the substring.
+ * It loops through the recipes, and for each recipe, it loops through the utensils, and if the utensil contains the
+ * pattern, it adds the recipe to the results
+ * @param recipesArray - an array of recipes
+ * @param pattern - the pattern to search for
+ * @returns An array of recipes that have at least one utensil that matches the pattern.
  */
-export function getRecipesByUtensil(recipesArray, substring) {
-    return recipesArray.filter(({ utensils }) =>
-        utensils.find((item) =>
-            item.toNormalize().includes(substring.toNormalize())
-        )
-    );
+export function getRecipesByUtensilByLoop(recipesArray, pattern) {
+    const patternNormalize = pattern.toNormalize();
+    const results = [];
+    for (let i = 0; i < recipesArray.length; i += 1) {
+        const recipe = recipesArray[i];
+        const { utensils } = recipe;
+        for (let j = 0; j < utensils.length; j += 1) {
+            const utensil = utensils[j];
+            const utensilNormalize = utensil.toNormalize();
+            if (utensilNormalize.includes(patternNormalize)) {
+                results.push(recipe);
+                break;
+            }
+        }
+    }
+    return results;
 }
 
 /**
@@ -101,13 +147,13 @@ export function tagSelect(elt) {
         new Tag(text, classElt);
         switch (classElt) {
             case 'ingredients':
-                getRecipesByIngredient(recipes, text);
+                getRecipesByIngredientByLoop(recipes, text);
                 break;
             case 'appliances':
-                getRecipesByAppliance(recipes, text);
+                getRecipesByApplianceByLoop(recipes, text);
                 break;
             case 'utensils':
-                getRecipesByUtensil(recipes, text);
+                getRecipesByUtensilByLoop(recipes, text);
                 break;
             default:
                 break;
@@ -118,16 +164,38 @@ export function tagSelect(elt) {
 /**
  * It returns an array of unique recipes that match the search pattern
  * @param {Recipes} recipesArray - an array of objects, each object is a recipe
- * @param {string} pattern - the search pattern
+ * @param {string} search - the search pattern
  * @returns {Recipes} An array of recipes that match the search pattern.
  */
-export function getRecipesByMainSearch(recipesArray, pattern) {
-    return (
-        getRecipesByDescription(recipesArray, pattern) ||
-        getRecipesByIngredient(recipesArray, pattern) ||
-        getRecipesByName(recipesArray, pattern)
-    );
+export function getRecipesByMainSearch(recipesArray, search) {
+    const searchNormalize = search.toNormalize();
+    const results = [];
+
+    for (let i = 0; i < recipesArray.length; i += 1) {
+        const recipe = recipesArray[i];
+        const descriptionNormalize = recipe.description.toNormalize();
+        const nameNormalize = recipe.name.toNormalize();
+
+        if (
+            descriptionNormalize.includes(searchNormalize) ||
+            recipe.ingredients.find((ingredient) =>
+                ingredient.ingredient.toNormalize().includes(searchNormalize)
+            ) ||
+            nameNormalize.includes(searchNormalize)
+        ) {
+            results.push(recipe);
+        }
+    }
+    return results;
 }
+
+// export function getRecipesByMainSearch(recipesArray, pattern) {
+//     return (
+//         getRecipesByDescriptionByLoop(recipesArray, pattern) ||
+//         getRecipesByIngredientByLoop(recipesArray, pattern) ||
+//         getRecipesByNameByLoop(recipesArray, pattern)
+//     );
+// }
 
 /**
  * It takes an array of recipes, and returns an array of unique ingredients
@@ -195,8 +263,8 @@ export function setAdvancedSearchField(recipesArray) {
  */
 export function getRecipesByTag(recipesArray, tag) {
     return uniqueArrayValues([
-        ...getRecipesByAppliance(recipesArray, tag),
-        ...getRecipesByIngredient(recipesArray, tag),
-        ...getRecipesByUtensil(recipesArray, tag),
+        ...getRecipesByApplianceByLoop(recipesArray, tag),
+        ...getRecipesByIngredientByLoop(recipesArray, tag),
+        ...getRecipesByUtensilByLoop(recipesArray, tag),
     ]);
 }
