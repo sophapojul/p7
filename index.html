@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8"/>
-    <link rel="icon" type="image/svg+xml" href="/ico/vite.svg"/>
-    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/ico/vite.svg">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="module" src="./src/main.js"></script>
     <title>Les petits plats</title>
 </head>
@@ -30,7 +30,7 @@
 <main class="main">
     <div class="search">
         <form class="search__form">
-            <input type="text" class="search__form__input"/>
+            <input type="text" class="search__form__input" placeholder="Rechercher une recette" autofocus>
             <svg
                     class="search__form__icon"
                     width="33"
@@ -106,7 +106,7 @@
                 </button>
             </div>
             <div class="dropdown__content" data-active="false">
-                <input class="dropdown__content__input" type="text"/>
+                <input class="dropdown__content__input" type="text">
                 <svg
                         class="dropdown__content--close"
                         width="16"
@@ -124,16 +124,16 @@
             </div>
         </li>
     </template>
-    <template id="no-result">
+    <!--<template id="no-result">
         <p class="message">
             Aucune recette ne correspond à votre critère… vous pouvez
             chercher « tarte aux pommes », « poisson », etc.
         </p>
-    </template>
+    </template>-->
     <template id="results-template">
         <li id="recipes-list" class="results__list__item card">
             <div class="results__list__item__image card__picture">
-                <img src="" alt="" width="380" height="178"/>
+                <img src="" alt="" width="380" height="178">
             </div>
             <div class="results__list__item__content">
                 <h2
@@ -174,10 +174,10 @@
             <span id="content"></span>
         </li>
     </template>
-    <template id="results-list-template">
+    <!--<template id="results-list-template">
         <li id="recipes-item" class="card">
             <div class="card__picture">
-                <img src="" alt="" class="card__picture__img"/>
+                <img src="" alt="" class="card__picture__img">
             </div>
             <div class="card__title">
                 <h2 class="card__name"></h2>
@@ -191,7 +191,7 @@
                 <div class="card__description"></div>
             </div>
         </li>
-    </template>
+    </template>-->
 </main>
 </body>
 </html>
