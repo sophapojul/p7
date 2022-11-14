@@ -1,14 +1,22 @@
 import { cloneTemplate } from '../utils/functions';
 
 /**
- * It takes an object with an array of ingredients, and for each ingredient, it creates a list item with the ingredient
- * name and quantity
- * @param {Object} ingredients - the ingredients object from the API
+ * @typedef {Array.<Object>} Ingredients
+ * @property {string} ingredient - The name of the ingredient.
+ * @property {number} [quantity] - The quantity of the ingredient.
+ * @property {string} [unit] - The unit of the ingredient.
  */
-export default function Ingredients(ingredients) {
+
+/**
+ * It takes an array of ingredients and a DOM element, and then it creates a list item for each ingredient and appends it
+ * to the DOM element
+ * @param {Ingredients} ingredients - an array of objects that contain the ingredient name and quantity
+ * @param {HTMLElement} element - The element that the ingredients will be appended to.
+ */
+export default function Ingredients(ingredients, element) {
     this.ingredients = ingredients;
-    this.id = this.ingredients.id;
-    this.ingredients.ingredients.forEach((ingredient) => {
+    this.element = element;
+    this.ingredients.forEach((ingredient) => {
         this.ingredient = ingredient;
         this.li = cloneTemplate('ingredients-template').firstElementChild;
         this.title = this.li.querySelector('#title');
@@ -17,9 +25,6 @@ export default function Ingredients(ingredients) {
         this.content.innerText = `${this.ingredient?.quantity ?? ''} ${
             this.ingredient?.unit ?? ''
         }`;
-        this.ul = document
-            .getElementById(`recipe-${this.id}`)
-            .querySelector('.results__list__item__content__ingredients');
-        this.ul.appendChild(this.li);
+        this.element.appendChild(this.li);
     });
 }
