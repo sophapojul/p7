@@ -8,6 +8,9 @@ import {
     displayRecipesByMainSearch,
     displayAdvancedSearchField,
     arrayIntersection,
+    uniqueArrayValues,
+    getRecipesIdByTag,
+    noResult,
 } from './utils/functions';
 import {
     tagSelect,
@@ -28,6 +31,7 @@ setAdvancedSearchField(recipes).forEach((arr) => {
     const { fieldName, options } = searchAdvancedFieldItem;
     new Dropdown(fieldName, options);
 });
+
 const advancedSearchFieldInputList = document.querySelectorAll(
     '.dropdown__content__input'
 );
@@ -48,12 +52,12 @@ const observer = new MutationObserver(observerCallback);
 
 observer.observe(tagList, config);
 
-/* Adding an event listener to each dropdown item. */
+/* Adding an event listener to each li element in the keywordList. */
 keywordList.forEach((li) => {
     li.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        tagSelect(ev.target);
-        li.parentElement.parentElement.firstElementChild.value = '';
+        const { target } = ev;
+        tagSelect(target);
+        target.parentElement.parentElement.firstElementChild.value = '';
     });
 });
 
@@ -68,8 +72,8 @@ mainSearchInput.addEventListener(
         const query = ev.target.value.toNormalize();
         const tagsList = Array.from(tagList.children);
         const resultList = document.querySelector('.results__list');
-        if (tagsList.length === 0) {
-            if (query.length > 2) {
+        if (query.length > 2) {
+            if (tagsList.length === 0) {
                 if (getRecipesByMainSearch(recipes, query).length > 0) {
                     // display the recipes filtered by the main search term;
                     displayRecipesByMainSearch(
@@ -80,53 +84,73 @@ mainSearchInput.addEventListener(
                         getRecipesByMainSearch(recipes, query)
                     );
                 } else {
-                    // removeDisplayedRecipes();
-                    resultList.innerHTML = '';
-                    resultList.insertAdjacentHTML(
-                        'afterbegin',
-                        `<p class="results__list__item__no-result">Aucune recette ne correspond à votre critère… vous pouvez chercher « tarte aux pommes », « poisson », etc.</p>`
-                    );
+                    noResult();
                 }
             } else {
-                // display all the keywords;
-                displayAdvancedSearchField(recipes);
-                // removeKeywords();
-                // removeDisplayedRecipes();
-                resultList.innerHTML = '';
+                // get recipes by intersection of getRecipesByMainSearch(recipes, query) et getRecipesByTags
+                const recipesIdByMainSearch = getRecipesByMainSearch(
+                    recipes,
+                    query
+                ).map((recipe) => recipe.id);
+                const recipesIdByTag = uniqueArrayValues(
+                    tagsList
+                        .map((tag) => tag.innerText)
+                        .reduce(
+                            (acc, tag) =>
+                                uniqueArrayValues(
+                                    arrayIntersection(
+                                        [
+                                            ...getRecipesByTag(
+                                                recipes,
+                                                tag
+                                            ).map((recipe) => recipe.id),
+                                            acc,
+                                        ],
+                                        acc
+                                    )
+                                ).flat(),
+                            []
+                        )
+                );
+                const result = arrayIntersection(
+                    recipesIdByTag,
+                    recipesIdByMainSearch
+                ).map((id) => recipes.find((recipe) => recipe.id === id));
+                if (result.length > 0) {
+                    displayRecipesByMainSearch(result);
+                    displayAdvancedSearchField(result);
+                } else {
+                    noResult();
+                }
             }
-        } else {
-            // get recipes by intersection of getRecipesByMainSearch(recipes, query) et getRecipesByTags
-            const recipesIdByMainSearch = getRecipesByMainSearch(
-                recipes,
-                query
-            ).map((recipe) => recipe.id);
-            const recipesIdByTag = tagsList
-                .map((tag) => tag.innerText)
-                .reduce(
-                    (acc, tag) => [
-                        ...getRecipesByTag(recipes, tag).map(
-                            (recipe) => recipe.id
-                        ),
-                        acc,
-                    ],
-                    []
-                )
-                .flat();
-            const result = arrayIntersection(
-                recipesIdByTag,
-                recipesIdByMainSearch
-            ).map((id) => recipes.find((recipe) => recipe.id === id));
+        } else if (tagsList.length > 0) {
+            const resultId = uniqueArrayValues(
+                tagsList
+                    .map((tag) => tag.innerText)
+                    .reduce(
+                        (acc, tag) =>
+                            uniqueArrayValues([
+                                ...arrayIntersection(
+                                    acc,
+                                    getRecipesIdByTag(recipes, tag)
+                                ),
+                                acc,
+                            ]).flat(),
+                        getRecipesIdByTag(recipes, tagsList[0].innerText)
+                    )
+            );
+            const result = resultId.map((id) =>
+                recipes.find((recipe) => recipe.id === id)
+            );
             if (result.length > 0) {
                 displayRecipesByMainSearch(result);
                 displayAdvancedSearchField(result);
             } else {
-                // removeDisplayedRecipes();
-                resultList.innerHTML = '';
-                resultList.insertAdjacentHTML(
-                    'afterbegin',
-                    `<p class="results__list__item__no-result">Aucune recette ne correspond à votre critère… vous pouvez chercher « tarte aux pommes », « poisson », etc.</p>`
-                );
+                noResult();
             }
+        } else {
+            resultList.innerHTML = '';
+            noResult();
         }
     }, 400)
 );
@@ -135,7 +159,6 @@ mainSearchInput.addEventListener(
 advancedSearchFieldInputList.forEach((input) => {
     input.addEventListener('input', (ev) => {
         ev.preventDefault();
-        // debugger;
         const search = document
             .querySelector('.search__form__input')
             .value.toNormalize();

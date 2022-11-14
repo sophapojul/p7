@@ -1,7 +1,11 @@
 import { getRecipesByMainSearch, getRecipesByTag } from '../filter/filter';
 import recipes from '../data/recipes';
-import { arrayIntersection, displayAdvancedSearchField } from './functions';
-import Recipes from '../constructor/recipes';
+import {
+    arrayIntersection,
+    displayAdvancedSearchField,
+    displayRecipe,
+    getRecipesIdByTag,
+} from './functions';
 
 /**
  *
@@ -12,7 +16,6 @@ export default function observerCallback(mutations) {
     let recipesListByTags = [];
 
     mutations.forEach((mutation) => {
-        // console.log(mutation.target.innerText.split(/\n/).length);
         const { addedNodes, removedNodes } = mutation;
         // get the list of tag(s) selected;
         const selectedTagsInnerText = Array.from(
@@ -27,9 +30,7 @@ export default function observerCallback(mutations) {
             ul.querySelectorAll('.results__list__item')
         ).map((recipe) => parseInt(recipe.id.split('-')[1], 10));
         ul.innerHTML = '';
-        // removeDisplayedRecipes();
         if (addedNodes.length > 0) {
-            // debugger;
             const lastTagInnerText = addedNodes[1].firstElementChild.innerText;
             // get the list of recipes id that match the tags list
             if (recipesListByTags.length === 0) {
@@ -41,23 +42,28 @@ export default function observerCallback(mutations) {
                 );
             }
             if (mainSearchInputValue === '') {
-                // debugger;
                 if (selectedTagsInnerText.length === 1) {
-                    // debugger;
                     // display the recipes that match the tags list;
                     recipesListByTags.forEach((recipe) => {
-                        new Recipes(recipe);
-                        // recipe.addEventListener('click', recipeListener);
+                        displayRecipe(recipe, ul);
                     });
                     // get the list of ingredients, appliances and utensils that match the search term and the tags
                     displayAdvancedSearchField(recipesListByTags);
+                } else {
+                    const recipesIdListByTags = recipesListByTags.map(
+                        (recipe) => recipe.id
+                    );
+                    const filteredRecipes = arrayIntersection(
+                        recipesIdList,
+                        recipesIdListByTags
+                    ).flatMap((id) =>
+                        recipes.find((recipe) => recipe.id === id)
+                    );
+                    filteredRecipes.forEach((recipe) => {
+                        displayRecipe(recipe, ul);
+                    });
+                    displayAdvancedSearchField(filteredRecipes);
                 }
-                // if (ul.children.length === 0) {
-                //     ul.insertAdjacentHTML(
-                //         'afterbegin',
-                //         `<p class="results__list__item__no-result">Aucune recette ne correspond à votre critère… </p>`
-                //     );
-                // }
             } else {
                 const recipesIdListByTags = recipesListByTags.map(
                     (recipe) => recipe.id
@@ -73,7 +79,7 @@ export default function observerCallback(mutations) {
                 );
                 // display the recipes
                 filteredRecipes.forEach((recipe) => {
-                    new Recipes(recipe);
+                    displayRecipe(recipe, ul);
                 });
                 if (
                     mainSearchInputValue !== '' ||
@@ -86,30 +92,33 @@ export default function observerCallback(mutations) {
         } else if (removedNodes.length > 0) {
             if (selectedTagsInnerText.length !== 0) {
                 // get the list of recipes id that match the tags list and the search term
-                const recipesByTags = selectedTagsInnerText.reduce(
-                    (acc, tagInnerText) =>
-                        arrayIntersection(
-                            acc,
-                            getRecipesByTag(recipes, tagInnerText)
-                        ),
-                    getRecipesByTag(recipes, selectedTagsInnerText[0])
-                );
+                const recipesByTags = selectedTagsInnerText
+                    .reduce(
+                        (acc, tagInnerText) =>
+                            arrayIntersection(
+                                acc,
+                                getRecipesIdByTag(recipes, tagInnerText)
+                            ),
+                        getRecipesIdByTag(recipes, selectedTagsInnerText[0])
+                    )
+                    .flatMap((id) =>
+                        recipes.filter((recipe) => recipe.id === id)
+                    );
                 if (ul.querySelector('.results__list__item__no-result')) {
-                    // ul.innerHTML = '';
                     ul.removeChild(
                         ul.querySelector('.results__list__item__no-result')
                     );
                 }
 
                 recipesByTags.forEach((recipe) => {
-                    new Recipes(recipe);
+                    displayRecipe(recipe, ul);
                 });
                 // get the list of ingredients, appliances and utensils that match the search term and the tags
                 displayAdvancedSearchField(recipesByTags);
             } else if (mainSearchInputValue.length > 2) {
                 getRecipesByMainSearch(recipes, mainSearchInputValue).forEach(
                     (recipe) => {
-                        new Recipes(recipe);
+                        displayRecipe(recipe, ul);
                     }
                 );
                 // get the list of ingredients, appliances and utensils that match the search term
