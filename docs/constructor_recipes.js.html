@@ -19,19 +19,32 @@
 
     <h1 class="page-title">Source: constructor/recipes.js</h1>
 
+    
 
 
 
-
-
+    
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
+            <pre class="prettyprint source linenums"><code>import { cloneTemplate, openModal } from '../utils/functions';
+
+/**
+ * @typedef {Array.&lt;Object>} Recipe
+ * @property {number} id - The id of the recipe.
+ * @property {string} name - The name of the recipe.
+ * @property {number} servings - The number of servings the recipe makes.
+ * @property {Ingredients} ingredients - An array of ingredients.
+ * @property {number} time - The time it takes to make the recipe.
+ * @property {string} description - A description of the recipe.
+ * @property {string} appliance - The appliance used to make the recipe.
+ * @property {Array.&lt;string>} utensils - An array of utensils used to make the recipe.
+ */
+
+/**
  * It takes a recipe object as an argument, and then creates a new DOM element for each recipe, and appends it to the DOM
- * @param {Object} recipe - This is the object that contains all the data for the recipe.
+ * @param {Recipe} recipe - This is the object that contains all the data for the recipe.
  */
 export default function Recipes(recipe) {
-    this.recipe = recipe;
     const { id, name, time, description, ingredients, appliance, utensils } =
         recipe;
     this.id = id;
@@ -41,38 +54,24 @@ export default function Recipes(recipe) {
     this.time = time;
     this.appliance = appliance;
     this.utensils = utensils;
-
-    this.template = document.getElementById('results-template');
     this.list = document.querySelector('.results__list');
-    this.item = this.template.content.cloneNode(true);
-    this.item
-        .querySelector('.results__list__item')
-        .setAttribute('id', `${this.id}`);
+    this.item = cloneTemplate('results-template').firstElementChild;
+    this.item.setAttribute('id', `recipe-${this.id}`);
     this.item.querySelector('.results__list__item__content__title').innerText =
         this.name;
     this.item.querySelector('.time__text__value').innerText = this.time;
     this.item.querySelector(
         '.results__list__item__content__description'
     ).innerText = this.description;
-    this.ingredients.forEach((ingredient) => {
-        this.li = document.createElement('li');
-        this.li.classList.add('ingredients__item');
-        this.li.setAttribute('id', `${this.id}`);
-        this.li.innerHTML = `
-            &lt;h3 class="ingredients__item__title">${
-                ingredient.ingredient
-            }  :&lt;/h3>
-            &lt;span class="ingredients__item__text">${
-                ingredient.quantity ? ingredient.quantity : ''
-            } ${ingredient.unit ? ingredient.unit : ''}&lt;/span>
-        `;
-        this.item
-            .querySelector('.results__list__item__content__ingredients')
-            .appendChild(this.li);
-        // this.item.querySelector('.ingredients__item__title').innerText = `${ingredient.ingredient}  :`;
-        // this.item.querySelector('.ingredients__item__text').innerText = `${ingredient.quantity} ${ingredient.unit}`;
-    });
-    this.list.appendChild(this.item);
+    this.ul = this.list.querySelector(
+        '.results__list__item__content__ingredients'
+    );
+    this.appendTo = function (element) {
+        element.append(this.item);
+    };
+    this.openModal = function () {
+        this.item.addEventListener('click', openModal);
+    };
 }
 </code></pre>
         </article>
@@ -84,13 +83,13 @@ export default function Recipes(recipe) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#filteredRecipesDisplay">filteredRecipesDisplay</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getKeywordArray">getKeywordArray</a></li><li><a href="global.html#getRecipesByTags">getRecipesByTags</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#renderRecipesBySearch">renderRecipesBySearch</a></li><li><a href="global.html#searchRecipes">recipesSearchBySubstring</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueValues">uniqueValues</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayIntersection">arrayIntersection</a></li><li><a href="global.html#cloneTemplate">cloneTemplate</a></li><li><a href="global.html#closeModal">closeModal</a></li><li><a href="global.html#closeModalByClick">closeModalByClick</a></li><li><a href="global.html#closeModalByEnter">closeModalByEnter</a></li><li><a href="global.html#closeModalByEscape">closeModalByEscape</a></li><li><a href="global.html#displayAdvancedSearchField">displayAdvancedSearchField</a></li><li><a href="global.html#displayKeywordsByMainSearch">displayKeywordsByMainSearch</a></li><li><a href="global.html#displayRecipe">displayRecipe</a></li><li><a href="global.html#displayRecipesByMainSearch">displayRecipesByMainSearch</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getRecipesByAppliance">getRecipesByAppliance</a></li><li><a href="global.html#getRecipesByDescription">getRecipesByDescription</a></li><li><a href="global.html#getRecipesByIngredient">getRecipesByIngredient</a></li><li><a href="global.html#getRecipesByMainSearch">getRecipesByMainSearch</a></li><li><a href="global.html#getRecipesByName">getRecipesByName</a></li><li><a href="global.html#getRecipesByTag">getRecipesByTag</a></li><li><a href="global.html#getRecipesByUtensil">getRecipesByUtensil</a></li><li><a href="global.html#getRecipesIdByTag">getRecipesIdByTag</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#openModal">openModal</a></li><li><a href="global.html#removeKeywords">removeKeywords</a></li><li><a href="global.html#setAdvancedSearchField">setAdvancedSearchField</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueArrayValues">uniqueArrayValues</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Aug 29 2022 17:56:27 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Nov 14 2022 10:56:37 GMT+0100 (Central European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

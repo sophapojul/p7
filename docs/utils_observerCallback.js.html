@@ -28,8 +28,12 @@
         <article>
             <pre class="prettyprint source linenums"><code>import { getRecipesByMainSearch, getRecipesByTag } from '../filter/filter';
 import recipes from '../data/recipes';
-import { arrayIntersection, displayAdvancedSearchField } from './functions';
-import Recipes from '../constructor/recipes';
+import {
+    arrayIntersection,
+    displayAdvancedSearchField,
+    displayRecipe,
+    getRecipesIdByTag,
+} from './functions';
 
 /**
  *
@@ -40,7 +44,6 @@ export default function observerCallback(mutations) {
     let recipesListByTags = [];
 
     mutations.forEach((mutation) => {
-        // console.log(mutation.target.innerText.split(/\n/).length);
         const { addedNodes, removedNodes } = mutation;
         // get the list of tag(s) selected;
         const selectedTagsInnerText = Array.from(
@@ -70,10 +73,24 @@ export default function observerCallback(mutations) {
                 if (selectedTagsInnerText.length === 1) {
                     // display the recipes that match the tags list;
                     recipesListByTags.forEach((recipe) => {
-                        new Recipes(recipe);
+                        displayRecipe(recipe, ul);
                     });
                     // get the list of ingredients, appliances and utensils that match the search term and the tags
                     displayAdvancedSearchField(recipesListByTags);
+                } else {
+                    const recipesIdListByTags = recipesListByTags.map(
+                        (recipe) => recipe.id
+                    );
+                    const filteredRecipes = arrayIntersection(
+                        recipesIdList,
+                        recipesIdListByTags
+                    ).flatMap((id) =>
+                        recipes.find((recipe) => recipe.id === id)
+                    );
+                    filteredRecipes.forEach((recipe) => {
+                        displayRecipe(recipe, ul);
+                    });
+                    displayAdvancedSearchField(filteredRecipes);
                 }
             } else {
                 const recipesIdListByTags = recipesListByTags.map(
@@ -90,7 +107,7 @@ export default function observerCallback(mutations) {
                 );
                 // display the recipes
                 filteredRecipes.forEach((recipe) => {
-                    new Recipes(recipe);
+                    displayRecipe(recipe, ul);
                 });
                 if (
                     mainSearchInputValue !== '' ||
@@ -103,32 +120,33 @@ export default function observerCallback(mutations) {
         } else if (removedNodes.length > 0) {
             if (selectedTagsInnerText.length !== 0) {
                 // get the list of recipes id that match the tags list and the search term
-                debugger;
-                const recipesByTags = selectedTagsInnerText.reduce(
-                    (acc, tagInnerText) =>
-                        arrayIntersection(
-                            acc,
-                            getRecipesByTag(recipes, tagInnerText)
-                        ),
-                    getRecipesByTag(recipes, selectedTagsInnerText[0])
-                );
-                console.log('recipesByTags', recipesByTags);
+                const recipesByTags = selectedTagsInnerText
+                    .reduce(
+                        (acc, tagInnerText) =>
+                            arrayIntersection(
+                                acc,
+                                getRecipesIdByTag(recipes, tagInnerText)
+                            ),
+                        getRecipesIdByTag(recipes, selectedTagsInnerText[0])
+                    )
+                    .flatMap((id) =>
+                        recipes.filter((recipe) => recipe.id === id)
+                    );
                 if (ul.querySelector('.results__list__item__no-result')) {
-                    // ul.innerHTML = '';
                     ul.removeChild(
                         ul.querySelector('.results__list__item__no-result')
                     );
                 }
 
                 recipesByTags.forEach((recipe) => {
-                    new Recipes(recipe);
+                    displayRecipe(recipe, ul);
                 });
                 // get the list of ingredients, appliances and utensils that match the search term and the tags
                 displayAdvancedSearchField(recipesByTags);
             } else if (mainSearchInputValue.length > 2) {
                 getRecipesByMainSearch(recipes, mainSearchInputValue).forEach(
                     (recipe) => {
-                        new Recipes(recipe);
+                        displayRecipe(recipe, ul);
                     }
                 );
                 // get the list of ingredients, appliances and utensils that match the search term
@@ -152,13 +170,13 @@ export default function observerCallback(mutations) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayIntersection">arrayIntersection</a></li><li><a href="global.html#cloneTemplate">cloneTemplate</a></li><li><a href="global.html#displayAdvancedSearchField">displayAdvancedSearchField</a></li><li><a href="global.html#displayKeywordsByMainSearch">displayKeywordsByMainSearch</a></li><li><a href="global.html#displayRecipesByMainSearch">displayRecipesByMainSearch</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getRecipesByAppliance">getRecipesByAppliance</a></li><li><a href="global.html#getRecipesByDescription">getRecipesByDescription</a></li><li><a href="global.html#getRecipesByIngredient">getRecipesByIngredient</a></li><li><a href="global.html#getRecipesByMainSearch">getRecipesByMainSearch</a></li><li><a href="global.html#getRecipesByName">getRecipesByName</a></li><li><a href="global.html#getRecipesByTag">getRecipesByTag</a></li><li><a href="global.html#getRecipesByUtensil">getRecipesByUtensil</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#removeKeywords">removeKeywords</a></li><li><a href="global.html#setAdvancedSearchField">setAdvancedSearchField</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueArrayValues">uniqueArrayValues</a></li><li><a href="global.html#uniqueValues">uniqueValues</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayIntersection">arrayIntersection</a></li><li><a href="global.html#cloneTemplate">cloneTemplate</a></li><li><a href="global.html#closeModal">closeModal</a></li><li><a href="global.html#closeModalByClick">closeModalByClick</a></li><li><a href="global.html#closeModalByEnter">closeModalByEnter</a></li><li><a href="global.html#closeModalByEscape">closeModalByEscape</a></li><li><a href="global.html#displayAdvancedSearchField">displayAdvancedSearchField</a></li><li><a href="global.html#displayKeywordsByMainSearch">displayKeywordsByMainSearch</a></li><li><a href="global.html#displayRecipe">displayRecipe</a></li><li><a href="global.html#displayRecipesByMainSearch">displayRecipesByMainSearch</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getRecipesByAppliance">getRecipesByAppliance</a></li><li><a href="global.html#getRecipesByDescription">getRecipesByDescription</a></li><li><a href="global.html#getRecipesByIngredient">getRecipesByIngredient</a></li><li><a href="global.html#getRecipesByMainSearch">getRecipesByMainSearch</a></li><li><a href="global.html#getRecipesByName">getRecipesByName</a></li><li><a href="global.html#getRecipesByTag">getRecipesByTag</a></li><li><a href="global.html#getRecipesByUtensil">getRecipesByUtensil</a></li><li><a href="global.html#getRecipesIdByTag">getRecipesIdByTag</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#openModal">openModal</a></li><li><a href="global.html#removeKeywords">removeKeywords</a></li><li><a href="global.html#setAdvancedSearchField">setAdvancedSearchField</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueArrayValues">uniqueArrayValues</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Wed Nov 09 2022 08:05:08 GMT+0100 (Central European Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Nov 14 2022 10:56:37 GMT+0100 (Central European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

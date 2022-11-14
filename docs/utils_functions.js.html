@@ -27,27 +27,21 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import './toNormalize';
-import { setAdvancedSearchField } from '../filter/filter';
+import { getRecipesByTag, setAdvancedSearchField } from '../filter/filter';
 import Recipes from '../constructor/recipes';
+import Ingredients from '../constructor/ingredients';
+import recipes from '../data/recipes';
+import RecipeInModal from '../constructor/recipeInModal';
 
 const keywordsArray = ['ingredients', 'appareils', 'ustensiles'];
 const modalContainer = document.querySelector('.modal-container');
-
-/**
- * It takes an array as an argument, and returns a new array with all the duplicate values removed.
- * @param { Array } array - The array to be filtered.
- * @returns { Array } The filtered array.
- */
-export function uniqueArrayValues(array) {
-    return Array.from(new Set(array));
-}
 
 /**
  * It takes an array of values and returns an array of unique values
  * @param {Array} array
  * @returns {Array}
  */
-export function uniqueValues(array) {
+export function uniqueArrayValues(array) {
     return Array.from(new Set(array));
 }
 
@@ -80,8 +74,20 @@ export function cloneTemplate(id) {
 }
 
 /**
+ * Given an array of recipes and a tag, return an array of the ids of the recipes that have that tag.
+ * @param {Recipes} recipesArray - an array of recipes
+ * @param {string} tagInnerText - the tag you want to search for
+ * @returns An array of recipe ids.
+ */
+export function getRecipesIdByTag(recipesArray, tagInnerText) {
+    return getRecipesByTag(recipesArray, tagInnerText).map(
+        (recipe) => recipe.id
+    );
+}
+
+/**
  * It takes in an array of li elements and an array of keywords, and displays the li elements that contain the keywords
- * @param {Array} liArray - an array of all the li elements in the dropdown menu
+ * @param {Array.&lt;HTMLLIElement>} liArray - an array of all the li elements in the dropdown menu
  * @param {Array} keywordArray - an array of keywords that the user has typed in the search bar.
  */
 export function displayKeywordsByMainSearch(liArray, keywordArray) {
@@ -110,17 +116,33 @@ export function displayAdvancedSearchField(recipesArray) {
 }
 
 /**
+ * It takes a recipe object and an element, creates a new Recipes object, appends it to the element, opens the modal, and
+ * creates a new Ingredients object
+ * @param {Recipe} recipe - the recipe object
+ * @param {HTMLElement} element - The element that the recipe will be appended to.
+ */
+export function displayRecipe(recipe, element) {
+    const recipeItem = new Recipes(recipe);
+    recipeItem.appendTo(element);
+    recipeItem.openModal();
+    const ul = element.querySelector(
+        `#${recipeItem.item.id} .results__list__item__content__ingredients`
+    );
+    new Ingredients(recipeItem.ingredients, ul);
+}
+
+/**
  * It takes an array of recipe objects, loops through each object, and creates a new instance of the Recipes class for each
  * object
  * @param {Recipes} recipesArray - an array of objects that contain the data for each recipe
  */
 export function displayRecipesByMainSearch(recipesArray) {
-    if (document.querySelector('.results__list')) {
-        document.querySelector('.results__list').innerHTML = '';
+    const resultsList = document.querySelector('.results__list');
+    if (resultsList) {
+        resultsList.innerHTML = '';
     }
     recipesArray.forEach((recipe) => {
-        new Recipes(recipe);
-        // recipe.addEventListener('click', recipeListener);
+        displayRecipe(recipe, resultsList);
     });
 }
 
@@ -147,18 +169,30 @@ export function removeKeywords() {
     });
 }
 
+/**
+ * If the key pressed is the escape key and the modal is open, close the modal
+ * @param {KeyboardEvent} ev - the event object
+ */
 export function closeModalByEscape(ev) {
     if (ev.key === 'Escape' &amp;&amp; modalContainer.classList.toggle('active')) {
         closeModal();
     }
 }
 
+/**
+ * If the user presses the Enter key and the modal is open, close the modal
+ * @param {KeyboardEvent} ev - the event object
+ */
 export function closeModalByEnter(ev) {
     if (ev.key === 'Enter' &amp;&amp; modalContainer.classList.toggle('active')) {
         closeModal();
     }
 }
 
+/**
+ * If the target of the click event is the overlay and the modal is active, close the modal
+ * @param {PointerEvent} ev - the event object
+ */
 export function closeModalByClick(ev) {
     if (
         ev.target.classList.contains('overlay') &amp;&amp;
@@ -168,6 +202,10 @@ export function closeModalByClick(ev) {
     }
 }
 
+/**
+ * It removes the active class from the modal container, removes the event listeners that were added to the close button,
+ * the document, and the modal container, and then returns undefined
+ */
 export function closeModal() {
     modalContainer.classList.toggle('active');
     document
@@ -178,8 +216,23 @@ export function closeModal() {
     document.removeEventListener('click', closeModalByClick);
 }
 
-export function openModal() {
-    // const modalContent = document.querySelector('.modal__content');
+/**
+ * It opens a modal window with a recipe
+ * @param {PointerEvent} ev - the event object
+ */
+export function openModal(ev) {
+    const modalContent = document.querySelector('.modal__content');
+    const recipeId = ev.currentTarget.id.split('-')[1];
+    const recipe = recipes.find((item) => item.id === Number(recipeId));
+    const recipeItem = new RecipeInModal(recipe);
+    modalContent.innerHTML = '';
+    recipeItem.appendTo(modalContent);
+    const { ingredients, item } = recipeItem;
+    const ul = modalContent.querySelector(
+        `#${item.id} .results__list__item__content__ingredients`
+    );
+    new Ingredients(ingredients, ul);
+
     modalContainer.classList.toggle('active');
     document
         .querySelector('.close-modal')
@@ -189,20 +242,13 @@ export function openModal() {
     document.addEventListener('click', closeModalByClick);
 }
 
-// export function removeDisplayedRecipes() {
-// const displayedRecipes = document.querySelectorAll('.results__list__item');
-// displayedRecipes.forEach((recipe) => {
-// recipe.remove();
-// document.querySelector('.results__list').innerHTML = '';
-// removeKeywords();
-// });
-// }
-
 export function noResult() {
     const ul = document.querySelector('.results__list');
-    if (ul.innerHTML === '') {
-        ul.innerHTML = `&lt;li class="results__list__item">Aucune recette ne correspond à votre critère… vous pouvez chercher « tarte aux pommes », « poisson », etc.&lt;/li>`;
-    }
+    ul.innerHTML = '';
+    ul.insertAdjacentHTML(
+        'afterbegin',
+        `&lt;p class="results__list__item__no-result">Aucune recette ne correspond à votre critère… vous pouvez chercher « tarte aux pommes », « poisson », etc.&lt;/p>`
+    );
 }
 </code></pre>
         </article>
@@ -214,13 +260,13 @@ export function noResult() {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayIntersection">arrayIntersection</a></li><li><a href="global.html#cloneTemplate">cloneTemplate</a></li><li><a href="global.html#displayAdvancedSearchField">displayAdvancedSearchField</a></li><li><a href="global.html#displayKeywordsByMainSearch">displayKeywordsByMainSearch</a></li><li><a href="global.html#displayRecipesByMainSearch">displayRecipesByMainSearch</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getRecipesByAppliance">getRecipesByAppliance</a></li><li><a href="global.html#getRecipesByDescription">getRecipesByDescription</a></li><li><a href="global.html#getRecipesByIngredient">getRecipesByIngredient</a></li><li><a href="global.html#getRecipesByMainSearch">getRecipesByMainSearch</a></li><li><a href="global.html#getRecipesByName">getRecipesByName</a></li><li><a href="global.html#getRecipesByTag">getRecipesByTag</a></li><li><a href="global.html#getRecipesByUtensil">getRecipesByUtensil</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#removeKeywords">removeKeywords</a></li><li><a href="global.html#setAdvancedSearchField">setAdvancedSearchField</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueArrayValues">uniqueArrayValues</a></li><li><a href="global.html#uniqueValues">uniqueValues</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#arrayIntersection">arrayIntersection</a></li><li><a href="global.html#cloneTemplate">cloneTemplate</a></li><li><a href="global.html#closeModal">closeModal</a></li><li><a href="global.html#closeModalByClick">closeModalByClick</a></li><li><a href="global.html#closeModalByEnter">closeModalByEnter</a></li><li><a href="global.html#closeModalByEscape">closeModalByEscape</a></li><li><a href="global.html#displayAdvancedSearchField">displayAdvancedSearchField</a></li><li><a href="global.html#displayKeywordsByMainSearch">displayKeywordsByMainSearch</a></li><li><a href="global.html#displayRecipe">displayRecipe</a></li><li><a href="global.html#displayRecipesByMainSearch">displayRecipesByMainSearch</a></li><li><a href="global.html#getAppliances">getAppliances</a></li><li><a href="global.html#getIngredients">getIngredients</a></li><li><a href="global.html#getRecipesByAppliance">getRecipesByAppliance</a></li><li><a href="global.html#getRecipesByDescription">getRecipesByDescription</a></li><li><a href="global.html#getRecipesByIngredient">getRecipesByIngredient</a></li><li><a href="global.html#getRecipesByMainSearch">getRecipesByMainSearch</a></li><li><a href="global.html#getRecipesByName">getRecipesByName</a></li><li><a href="global.html#getRecipesByTag">getRecipesByTag</a></li><li><a href="global.html#getRecipesByUtensil">getRecipesByUtensil</a></li><li><a href="global.html#getRecipesIdByTag">getRecipesIdByTag</a></li><li><a href="global.html#getUtensils">getUtensils</a></li><li><a href="global.html#observer">observer</a></li><li><a href="global.html#openModal">openModal</a></li><li><a href="global.html#removeKeywords">removeKeywords</a></li><li><a href="global.html#setAdvancedSearchField">setAdvancedSearchField</a></li><li><a href="global.html#tagSelect">tagSelect</a></li><li><a href="global.html#uniqueArrayValues">uniqueArrayValues</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Wed Nov 09 2022 08:05:08 GMT+0100 (Central European Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Nov 14 2022 10:56:37 GMT+0100 (Central European Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
