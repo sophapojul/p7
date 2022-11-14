@@ -31,12 +31,12 @@
   color: f.set-text-color($color);
 }
 
-@mixin line-clamp($lines, $line-height) {
+@mixin line-clamp($lines, $line-height, $font-size) {
   display: block;
   display: -webkit-box;
   -webkit-line-clamp: $lines;
   -webkit-box-orient: vertical;
-  max-height: $lines * $line-height;
+  max-height: ($lines * $line-height * $font-size);
   text-overflow: ellipsis;
   overflow: hidden;
 }
