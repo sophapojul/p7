@@ -1,24 +1,28 @@
+import { cloneTemplate, openModal } from '../utils/functions';
+
+/**
+ * @typedef {Array.<Object>} Recipe
+ * @property {number} id - The id of the recipe.
+ * @property {string} name - The name of the recipe.
+ * @property {number} servings - The number of servings the recipe makes.
+ * @property {Ingredients} ingredients - An array of ingredients.
+ * @property {number} time - The time it takes to make the recipe.
+ * @property {string} description - A description of the recipe.
+ * @property {string} appliance - The appliance used to make the recipe.
+ * @property {Array.<string>} utensils - An array of utensils used to make the recipe.
+ */
+
 /**
  * It takes a recipe object as an argument, and then creates a new DOM element for each recipe, and appends it to the DOM
- * @param {Object} recipe - This is the object that contains all the data for the recipe.
+ * @param {Recipe} recipe - This is the object that contains all the data for the recipe.
  */
-import Ingredients from './ingredients';
-import {
-    cloneTemplate,
-    closeModalByEscape,
-    openModal,
-} from '../utils/functions';
-
 export default function Recipes(recipe) {
     const { id, name, time, description, ingredients, appliance, utensils } =
         recipe;
-
-    // const [{ quantity, unit, ingredient }] = ingredients;
     this.id = id;
     this.name = name;
     this.description = description;
     this.ingredients = ingredients;
-    this.ingredientsByRecipes = { id, ingredients };
     this.time = time;
     this.appliance = appliance;
     this.utensils = utensils;
@@ -31,13 +35,13 @@ export default function Recipes(recipe) {
     this.item.querySelector(
         '.results__list__item__content__description'
     ).innerText = this.description;
-    this.ingredientsListTemplate = document.getElementById(
-        'ingredients-template'
-    );
     this.ul = this.list.querySelector(
         '.results__list__item__content__ingredients'
     );
-    this.list.appendChild(this.item);
-    this.item.addEventListener('click', () => openModal(this.item));
-    new Ingredients(this.ingredientsByRecipes);
+    this.appendTo = function (element) {
+        element.append(this.item);
+    };
+    this.openModal = function () {
+        this.item.addEventListener('click', openModal);
+    };
 }
