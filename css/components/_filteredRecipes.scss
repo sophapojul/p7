@@ -12,12 +12,9 @@
   margin-top: 2rem;
 
   &__item {
-    img {
-      display: block;
-      height: auto;
-      height: 100%;
-      object-fit: cover;
-      background-color: u.$bgc-dark-grey;
+    &__image {
+      aspect-ratio: 380 / 178;
+      background-color: u.$bgc-grey;
     }
 
     &__content {
